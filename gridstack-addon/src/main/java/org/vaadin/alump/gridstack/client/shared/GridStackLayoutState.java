@@ -1,5 +1,5 @@
 /**
- * GridStackServerRpc.java (GridStackLayout)
+ * GridStackLayoutState.java (GridStackLayout)
  *
  * Copyright 2015 Vaadin Ltd, Sami Viitanen <sami.viitanen@vaadin.org>
  *
@@ -18,11 +18,18 @@
 package org.vaadin.alump.gridstack.client.shared;
 
 import com.vaadin.shared.Connector;
-import com.vaadin.shared.communication.ServerRpc;
+import com.vaadin.shared.ui.AbstractLayoutState;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * ServerRpc for GridStack
+ * State of GridStackLayout
  */
-public interface GridStackServerRpc extends ServerRpc {
-    void onChildMoved(Connector child, int x, int y, int width, int height);
+public class GridStackLayoutState extends AbstractLayoutState {
+
+    public Map<Connector, GridStackChildOptions> childOptions = new HashMap<Connector,GridStackChildOptions>();
+
+    public GridStackOptions gridStackOptions = new GridStackOptions();
+
 }

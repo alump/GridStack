@@ -50,14 +50,18 @@ public class DemoUI extends UI
         toolbar.addComponent(new Label("GridStack Demo"));
         toolbar.addComponent(createButton(FontAwesome.PLUS, e -> {
             int index = gridStack.getComponentCount();
-            gridStack.addComponent(new Label("Hep #" + index), 0, index, index, 1);
+            gridStack.addComponent(new Label("Hep #" + index), 0, index - 1, index, 1);
         }));
 
         layout.addComponent(gridStack);
         gridStack.setSizeFull();
         layout.setExpandRatio(gridStack, 1f);
         gridStack.addComponent(new Label("Hello World"), 0, 0, 1, 1);
-        gridStack.addComponent(new Label("Lorem ipsum"), 0, 1, 3, 1);
+        gridStack.addComponent(new Label("Lorem ipsum"), 1, 0, 3, 1);
+
+        gridStack.addGridStackMoveListener(e -> {
+            System.out.println("Move from " + e.getOld().toString() + " to " + e.getNew().toString());
+        });
 
     }
 

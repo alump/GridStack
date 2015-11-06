@@ -1,12 +1,30 @@
+/**
+ * GwtGridStack.java (GridStackLayout)
+ *
+ * Copyright 2015 Vaadin Ltd, Sami Viitanen <sami.viitanen@vaadin.org>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.vaadin.alump.gridstack.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.vaadin.alump.gridstack.client.shared.GridStackComponentInfo;
+import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
 
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 public class GwtGridStack extends ComplexPanel {
@@ -18,6 +36,12 @@ public class GwtGridStack extends ComplexPanel {
     private static int idCounter = 0;
     public final String elementId;
 
+    protected GwtGridStackMoveHandler moveHandler = null;
+
+    public interface GwtGridStackMoveHandler {
+        void onWidgetMoved(Widget widget, int x, int y, int width, int height);
+    }
+
 	public GwtGridStack() {
         setElement(Document.get().createDivElement());
         setStyleName("grid-stack");
@@ -25,6 +49,10 @@ public class GwtGridStack extends ComplexPanel {
         elementId = "gridstack-" + (idCounter++);
         getElement().setId(elementId);
 	}
+
+    public boolean isInitialized() {
+        return initialized;
+    }
 
     public void setOptions(GwtGridStackOptions options) {
         if(!initialized) {
@@ -40,7 +68,7 @@ public class GwtGridStack extends ComplexPanel {
         add(widget, 0, 0, 1, 1);
     }
 
-    public void add(Widget widget, GridStackComponentInfo info) {
+    public void add(Widget widget, GridStackChildOptions info) {
         if(info != null) {
             add(widget, info.x, info.y, info.width, info.height);
         } else {
@@ -88,8 +116,28 @@ public class GwtGridStack extends ComplexPanel {
         return child.getElement().getParentElement();
     }
 
-    protected void onGridStackChange(JavaScriptObject event, JavaScriptObject items) {
+    protected void onGridStackChange(Event event, GwtGridStackChangedItem[] items) {
         LOGGER.fine("on grid stack change");
+        for(int i = 0; i < items.length; ++i) {
+            GwtGridStackChangedItem item = items[i];
+            Widget child = mapElementToWidget(item.getElement());
+            if(child == null) {
+                LOGGER.severe("Could not map changed event to child");
+            } else if(moveHandler != null) {
+                moveHandler.onWidgetMoved(child, item.getX(), item.getY(), item.getWidth(), item.getHeight());
+            }
+        }
+    }
+
+    protected Widget mapElementToWidget(Element element) {
+        Iterator<Widget> iter = getChildren().iterator();
+        while(iter.hasNext()) {
+            Widget child = iter.next();
+            if(element.isOrHasChild(child.getElement())) {
+                return child;
+            }
+        }
+        return null;
     }
 
     protected native void initializeGridStack(GwtGridStackOptions options)
@@ -101,6 +149,8 @@ public class GwtGridStack extends ComplexPanel {
             var element = $wnd.$('#' + elementId);
             element.gridstack(options);
             element.on('change', function(e, items) {
+                console.log('change!');
+                console.log(items);
                 that.@org.vaadin.alump.gridstack.client.GwtGridStack::onGridStackChange(*)(e, items);
             });
         });
@@ -121,6 +171,51 @@ public class GwtGridStack extends ComplexPanel {
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
             grid.remove_widget(element, false);
+        });
+    }-*/;
+
+    public void setMoveHandler(GwtGridStackMoveHandler handler) {
+        moveHandler = handler;
+    }
+
+
+    public void updateChild(Widget widget, GridStackChildOptions options) {
+        Element wrapper = widget.getElement().getParentElement().getParentElement();
+        updateWidgetWrapper(wrapper, options.x, options.y, options.width, options.height);
+    }
+
+    protected native final void updateWidgetWrapper(Element element, int x, int y, int width, int height)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.update(element, x, y, width, height);
+        });
+    }-*/;
+
+    public void commit() {
+        nativeCommit();
+    }
+
+    protected native final void nativeCommit()
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.commit();
+        });
+    }-*/;
+
+    public void batchUpdate() {
+        nativeBatchUpdate();
+    }
+
+    protected native final void nativeBatchUpdate()
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.batch_update();
         });
     }-*/;
 }

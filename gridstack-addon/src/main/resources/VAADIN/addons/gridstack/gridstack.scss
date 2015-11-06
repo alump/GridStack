@@ -96,11 +96,11 @@ $gridstack_animation_speed: .3s !default;
 
       > .ui-resizable-nw { cursor: nw-resize; width: 20px; height: 20px; left: 10px; top: 0; }
       > .ui-resizable-n  { cursor: n-resize;  height: 10px; top: 0; left: 25px; right: 25px; }
-      > .ui-resizable-ne { cursor: ne-resize; width: 20px; height: 20px; right: 10px; top: 0; }
+      > .ui-resizable-ne { cursor: ne-resize; width: 20px; height: 20px; right: 0; top: 0; }
       > .ui-resizable-e  { cursor: e-resize;  width: 10px; right: $gridstack_horizontal_padding / 2; top: 15px; bottom: 15px; }
-      > .ui-resizable-se { cursor: se-resize; width: 20px; height: 20px; right: 10px; bottom: 0; }
+      > .ui-resizable-se { cursor: se-resize; width: 20px; height: 20px; right: 0; bottom: 0; }
       > .ui-resizable-s  { cursor: s-resize;  height: 10px; left: 25px; bottom: 0; right: 25px; }
-      > .ui-resizable-sw { cursor: sw-resize; width: 20px; height: 20px; left: 10px; bottom: 0; }
+      > .ui-resizable-sw { cursor: sw-resize; width: 20px; height: 20px; left: 0; bottom: 0; }
       > .ui-resizable-w  { cursor: w-resize;  width: 10px; left: $gridstack_horizontal_padding / 2; top: 15px; bottom: 15px; }
 
       @for $i from 1 through $gridstack-columns {

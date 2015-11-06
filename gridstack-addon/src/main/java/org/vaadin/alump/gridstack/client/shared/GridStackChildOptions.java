@@ -1,5 +1,5 @@
 /**
- * GridStackServerRpc.java (GridStackLayout)
+ * GridStackChildOptions.java (GridStackLayout)
  *
  * Copyright 2015 Vaadin Ltd, Sami Viitanen <sami.viitanen@vaadin.org>
  *
@@ -17,12 +17,19 @@
  */
 package org.vaadin.alump.gridstack.client.shared;
 
-import com.vaadin.shared.Connector;
-import com.vaadin.shared.communication.ServerRpc;
+import java.io.Serializable;
 
 /**
- * ServerRpc for GridStack
+ * Layouting metadata for child components
  */
-public interface GridStackServerRpc extends ServerRpc {
-    void onChildMoved(Connector child, int x, int y, int width, int height);
+public class GridStackChildOptions implements Serializable {
+    public int x = -1;
+    public int y = -1;
+    public int width = 1;
+    public int height = 1;
+    public boolean autoPosition = false;
+    public Integer minWidth = null;
+    public Integer minHeight = null;
+    public Integer maxWidth = null;
+    public Integer maxHeight = null;
 }

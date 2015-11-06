@@ -1,3 +1,20 @@
+/**
+ * GridStackLayoutConnector.java (GridStackLayout)
+ *
+ * Copyright 2015 Vaadin Ltd, Sami Viitanen <sami.viitanen@vaadin.org>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.vaadin.alump.gridstack.client;
 
 import com.google.gwt.user.client.ui.Widget;
@@ -6,8 +23,10 @@ import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.ui.AbstractLayoutConnector;
 
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
-import org.vaadin.alump.gridstack.client.shared.GridStackState;
+import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
+import org.vaadin.alump.gridstack.client.shared.GridStackLayoutState;
 
 @Connect(org.vaadin.alump.gridstack.GridStackLayout.class)
 public class GridStackLayoutConnector extends AbstractLayoutConnector {
@@ -20,6 +39,22 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
     @Override
     public void init() {
         super.init();
+        getWidget().setMoveHandler(new GwtGridStack.GwtGridStackMoveHandler() {
+            @Override
+            public void onWidgetMoved(Widget widget, int x, int y, int width, int height) {
+                getRpcProxy(GridStackServerRpc.class).onChildMoved(
+                        getChildConnectorForWidget(widget), x, y, width, height);
+            }
+        });
+    }
+
+    protected ComponentConnector getChildConnectorForWidget(Widget widget) {
+        for(ComponentConnector connector : getChildComponents()) {
+            if(connector.getWidget() == widget) {
+                return connector;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -33,8 +68,8 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 	}
 
 	@Override
-	public GridStackState getState() {
-		return (GridStackState) super.getState();
+	public GridStackLayoutState getState() {
+		return (GridStackLayoutState) super.getState();
 	}
 
 	@Override
@@ -43,6 +78,15 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
         if(event.isInitialStateChange() || event.hasPropertyChanged("gridStackProperties")) {
             getWidget().setOptions(GwtGridStackOptions.createFrom(getState().gridStackOptions));
+        }
+
+        if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {
+            getWidget().batchUpdate();
+            for(Connector connector : getState().childOptions.keySet()) {
+                Widget widget = ((ComponentConnector)connector).getWidget();
+                getWidget().updateChild(widget, getState().childOptions.get(connector));
+            }
+            getWidget().commit();
         }
 	}
 
@@ -60,7 +104,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
         for (ComponentConnector child : getChildComponents()) {
             if (child.getWidget().getParent() != getWidget()) {
-               getWidget().add(child.getWidget(), getState().layoutData.get(child));
+               getWidget().add(child.getWidget(), getState().childOptions.get(child));
             }
         }
     }
