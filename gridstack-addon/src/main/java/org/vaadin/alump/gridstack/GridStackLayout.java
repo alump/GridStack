@@ -58,7 +58,10 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
                 info.y = move.y;
                 info.width = move.width;
                 info.height = move.height;
-                events.add(createMoveEvent(childComponent, oldCoordinates));
+
+                if(!oldCoordinates.equals(getCoordinates(childComponent))) {
+                    events.add(createMoveEvent(childComponent, oldCoordinates));
+                }
             }
             fireMoveEvents(events);
         }
@@ -198,6 +201,10 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     protected void fireMoveEvents(Collection<GridStackMoveEvent> events) {
+        if(events.isEmpty()) {
+            return;
+        }
+
         for(GridStackMoveEvent.GridStackMoveListener listener : moveListeners) {
             listener.onGridStackMove(events);
         }
