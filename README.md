@@ -1,10 +1,10 @@
-# MyComponent Add-on for Vaadin 7
+# GridStack Add-on for Vaadin 7
 
-MyComponent is an UI component add-on for Vaadin 7.
+This add-on provides GridStackLayout layout component that uses gridstack.js on client side.
 
 ## Online demo
 
-Try the add-on demo at <url of the online demo>
+Try the add-on demo at http://app.siika.fi/GridStackDemo
 
 ## Download release
 
@@ -52,8 +52,7 @@ Another way of debugging client-side is superdev mode. To enable it, uncomment d
 ## Release notes
 
 ### Version 0.0.1-SNAPSHOT
-- ...
-- ...
+- TBD
 
 ## Roadmap
 

@@ -179,6 +179,7 @@
 						<goals>
 							<goal>resources</goal>
 							<goal>update-widgetset</goal>
+							<goal>compile-theme</goal>
 							<goal>compile</goal>
 						</goals>
 					</execution>
@@ -186,9 +187,9 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
+				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.10.v20130312</version>
+				<version>9.2.6.v20141205</version>
 				<configuration>
 					<webApp>
 						<contextPath>/</contextPath>

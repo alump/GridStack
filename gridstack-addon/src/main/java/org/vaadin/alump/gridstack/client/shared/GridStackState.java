@@ -13,6 +13,6 @@ public class GridStackState extends AbstractLayoutState {
 
     public Map<Connector, GridStackComponentInfo> layoutData = new HashMap<Connector,GridStackComponentInfo>();
 
-    public GridStackProperties gridStackProperties = new GridStackProperties();
+    public GridStackOptions gridStackOptions = new GridStackOptions();
 
 }

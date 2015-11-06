@@ -7,6 +7,7 @@ import com.vaadin.shared.EventId;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
 import org.vaadin.alump.gridstack.client.shared.GridStackComponentInfo;
+import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
 import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
 import org.vaadin.alump.gridstack.client.shared.GridStackState;
 
@@ -24,6 +25,8 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
 
     protected final List<Component> components = new ArrayList<Component>();
 
+    private boolean initialClientResponseSent = false;
+
     private GridStackServerRpc serverRpc = new GridStackServerRpc() {
 
     };
@@ -31,6 +34,12 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     public GridStackLayout() {
         super();
         registerRpc(serverRpc, GridStackServerRpc.class);
+    }
+
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+        initialClientResponseSent = true;
     }
 
 
@@ -121,5 +130,16 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     @Deprecated
     public void removeListener(LayoutEvents.LayoutClickListener layoutClickListener) {
         removeLayoutClickListener(layoutClickListener);
+    }
+
+    /**
+     * Get gridstack.js options, for now these can be only modified before layout has been rendered on client side.
+     * @return
+     */
+    public GridStackOptions getOptions() {
+        if(initialClientResponseSent) {
+            throw new IllegalStateException("Options can not be modified after initial response has been sent to client");
+        }
+        return getState().gridStackOptions;
     }
 }

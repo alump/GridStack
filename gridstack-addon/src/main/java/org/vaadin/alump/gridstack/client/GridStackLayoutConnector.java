@@ -42,7 +42,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 		super.onStateChanged(event);
 
         if(event.isInitialStateChange() || event.hasPropertyChanged("gridStackProperties")) {
-            getWidget().setProperties(getState().gridStackProperties);
+            getWidget().setOptions(GwtGridStackOptions.createFrom(getState().gridStackOptions));
         }
 	}
 

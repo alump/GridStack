@@ -6,9 +6,12 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.vaadin.alump.gridstack.client.shared.GridStackComponentInfo;
-import org.vaadin.alump.gridstack.client.shared.GridStackProperties;
+
+import java.util.logging.Logger;
 
 public class GwtGridStack extends ComplexPanel {
+
+    private final static Logger LOGGER = Logger.getLogger(GwtGridStack.class.getName());
 
     boolean initialized = false;
 
@@ -23,9 +26,9 @@ public class GwtGridStack extends ComplexPanel {
         getElement().setId(elementId);
 	}
 
-    public void setProperties(GridStackProperties properties) {
+    public void setOptions(GwtGridStackOptions options) {
         if(!initialized) {
-            initializeGridStack();
+            initializeGridStack(options);
             initialized = true;
         } else {
             //TODO
@@ -47,12 +50,19 @@ public class GwtGridStack extends ComplexPanel {
 
     public void add(Widget widget, int x, int y, int width, int height) {
         Element wrapper = createWrapper(x, y, width, height);
-        getElement().appendChild(wrapper);
+        if(initialized) {
+            addWidgetWrapperToGridStack(wrapper);
+        } else {
+            getElement().appendChild(wrapper);
+        }
         super.add(widget, wrapper.getFirstChildElement());
     }
 
     @Override
     public boolean remove(Widget widget) {
+        if(initialized) {
+            removeWidgetWrapperFromGridStack(widget.getElement().getParentElement().getParentElement());
+        }
         return super.remove(widget);
     }
 
@@ -78,17 +88,39 @@ public class GwtGridStack extends ComplexPanel {
         return child.getElement().getParentElement();
     }
 
-    protected native void initializeGridStack()
+    protected void onGridStackChange(JavaScriptObject event, JavaScriptObject items) {
+        LOGGER.fine("on grid stack change");
+    }
+
+    protected native void initializeGridStack(GwtGridStackOptions options)
     /*-{
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        var that = this;
 
         $wnd.$(function () {
-            var options = {
-                cell_height: 80,
-                vertical_margin: 10
-            };
-            $wnd.$('#' + elementId).gridstack(options);
+            var element = $wnd.$('#' + elementId);
+            element.gridstack(options);
+            element.on('change', function(e, items) {
+                that.@org.vaadin.alump.gridstack.client.GwtGridStack::onGridStackChange(*)(e, items);
+            });
         });
     }-*/;
 
+    protected native void addWidgetWrapperToGridStack(Element element)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.add_widget(element);
+        });
+    }-*/;
+
+    protected native void removeWidgetWrapperFromGridStack(Element element)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.remove_widget(element, false);
+        });
+    }-*/;
 }

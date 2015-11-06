@@ -8,4 +8,10 @@
   @include valo;
 
   @include addons;
+
+  .grid-stack-item {
+    border: 1px solid silver;
+    box-sizing: border-box;
+    background: white;
+  }
 }
