@@ -39,7 +39,7 @@ public class GwtGridStack extends ComplexPanel {
     protected GwtGridStackMoveHandler moveHandler = null;
 
     public interface GwtGridStackMoveHandler {
-        void onWidgetMoved(Widget widget, int x, int y, int width, int height);
+        void onWidgetsMoved(Widget[] widgets, GwtGridStackChangedItem[] data);
     }
 
 	public GwtGridStack() {
@@ -117,16 +117,20 @@ public class GwtGridStack extends ComplexPanel {
     }
 
     protected void onGridStackChange(Event event, GwtGridStackChangedItem[] items) {
-        LOGGER.fine("on grid stack change");
+        Widget widgets[] = new Widget[items.length];
+
         for(int i = 0; i < items.length; ++i) {
             GwtGridStackChangedItem item = items[i];
             Widget child = mapElementToWidget(item.getElement());
             if(child == null) {
                 LOGGER.severe("Could not map changed event to child");
+                return;
             } else if(moveHandler != null) {
-                moveHandler.onWidgetMoved(child, item.getX(), item.getY(), item.getWidth(), item.getHeight());
+                widgets[i] = child;
             }
         }
+
+        moveHandler.onWidgetsMoved(widgets, items);
     }
 
     protected Widget mapElementToWidget(Element element) {

@@ -1,5 +1,5 @@
 /**
- * GridStackServerRpc.java (GridStackLayout)
+ * GridStackMoveData.java (GridStackLayout)
  *
  * Copyright 2015 Vaadin Ltd, Sami Viitanen <sami.viitanen@vaadin.org>
  *
@@ -17,13 +17,29 @@
  */
 package org.vaadin.alump.gridstack.client.shared;
 
-import com.vaadin.shared.communication.ServerRpc;
+import com.vaadin.shared.Connector;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
- * ServerRpc for GridStack
+ * Data of move event send by client side
  */
-public interface GridStackServerRpc extends ServerRpc {
-    void onChildrenMoved(List<GridStackMoveData> moves);
+public class GridStackMoveData implements Serializable {
+    public Connector child;
+    public int x;
+    public int y;
+    public int width;
+    public int height;
+
+    public GridStackMoveData() {
+
+    }
+
+    public GridStackMoveData(Connector child, int x, int y, int width, int height) {
+        this.child = child;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
 }

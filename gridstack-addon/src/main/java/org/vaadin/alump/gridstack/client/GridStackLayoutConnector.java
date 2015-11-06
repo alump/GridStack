@@ -25,8 +25,12 @@ import com.vaadin.client.ui.AbstractLayoutConnector;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
+import org.vaadin.alump.gridstack.client.shared.GridStackMoveData;
 import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
 import org.vaadin.alump.gridstack.client.shared.GridStackLayoutState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Connect(org.vaadin.alump.gridstack.GridStackLayout.class)
 public class GridStackLayoutConnector extends AbstractLayoutConnector {
@@ -41,9 +45,15 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         super.init();
         getWidget().setMoveHandler(new GwtGridStack.GwtGridStackMoveHandler() {
             @Override
-            public void onWidgetMoved(Widget widget, int x, int y, int width, int height) {
-                getRpcProxy(GridStackServerRpc.class).onChildMoved(
-                        getChildConnectorForWidget(widget), x, y, width, height);
+            public void onWidgetsMoved(Widget[] widgets, GwtGridStackChangedItem[] data) {
+                List<GridStackMoveData> dataSent = new ArrayList<GridStackMoveData>();
+                for(int i = 0; i < widgets.length; ++i) {
+                    Widget widget = widgets[i];
+                    GwtGridStackChangedItem itemData = data[i];
+                    dataSent.add(new GridStackMoveData(getChildConnectorForWidget(widget),
+                            itemData.getX(), itemData.getY(), itemData.getWidth(), itemData.getHeight()));
+                }
+                getRpcProxy(GridStackServerRpc.class).onChildrenMoved(dataSent);
             }
         });
     }

@@ -20,6 +20,8 @@ package org.vaadin.alump.gridstack;
 
 import com.vaadin.ui.Component;
 
+import java.util.Collection;
+
 /**
  * Event thrown when child of GridStackLayout has moved and/or resized by user
  */
@@ -32,7 +34,11 @@ public class GridStackMoveEvent {
 
 
     public interface GridStackMoveListener {
-        void onGridStackMove(GridStackMoveEvent event);
+        /**
+         * Called when children of layout have been moved. All moves caused by single action are given in collection.
+         * @param events Collection of events caused by user's actions
+         */
+        void onGridStackMove(Collection<GridStackMoveEvent> events);
     }
 
     public GridStackMoveEvent(GridStackLayout layout, Component movedChild, GridStackCoordinates oldCoordinates,

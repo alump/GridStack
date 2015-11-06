@@ -23,12 +23,10 @@ import com.vaadin.shared.Connector;
 import com.vaadin.shared.EventId;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
-import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
-import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
-import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
-import org.vaadin.alump.gridstack.client.shared.GridStackLayoutState;
+import org.vaadin.alump.gridstack.client.shared.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,16 +47,20 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     private GridStackServerRpc serverRpc = new GridStackServerRpc() {
 
         @Override
-        public void onChildMoved(Connector child, int x, int y, int width, int height) {
-            Component childComponent = (Component)child;
-            GridStackCoordinates oldCoordinates = getCoordinates(childComponent);
+        public void onChildrenMoved(List<GridStackMoveData> moves) {
+            Collection<GridStackMoveEvent> events = new ArrayList<GridStackMoveEvent>();
+            for(GridStackMoveData move : moves) {
+                Component childComponent = (Component)move.child;
+                GridStackCoordinates oldCoordinates = getCoordinates(childComponent);
 
-            GridStackChildOptions info = getState(false).childOptions.get(child);
-            info.x = x;
-            info.y = y;
-            info.width = width;
-            info.height = height;
-            fireMoveEvent(childComponent, oldCoordinates);
+                GridStackChildOptions info = getState(false).childOptions.get(move.child);
+                info.x = move.x;
+                info.y = move.y;
+                info.width = move.width;
+                info.height = move.height;
+                events.add(createMoveEvent(childComponent, oldCoordinates));
+            }
+            fireMoveEvents(events);
         }
     };
 
@@ -190,12 +192,14 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         return new GridStackCoordinates(opts.x, opts.y, opts.width, opts.height);
     }
 
-    protected void fireMoveEvent(Component component, GridStackCoordinates oldCoordinates) {
-        final GridStackMoveEvent event = new GridStackMoveEvent(this, component, oldCoordinates,
+    protected GridStackMoveEvent createMoveEvent(Component component, GridStackCoordinates oldCoordinates) {
+        return new GridStackMoveEvent(this, component, oldCoordinates,
                 getCoordinates(component));
+    }
 
+    protected void fireMoveEvents(Collection<GridStackMoveEvent> events) {
         for(GridStackMoveEvent.GridStackMoveListener listener : moveListeners) {
-            listener.onGridStackMove(event);
+            listener.onGridStackMove(events);
         }
     }
 }

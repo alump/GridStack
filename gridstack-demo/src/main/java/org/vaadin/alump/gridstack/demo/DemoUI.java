@@ -14,6 +14,9 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackLayout;
 
+import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Theme("demo")
 @Title("GridStack Add-on Demo")
 @SuppressWarnings("serial")
@@ -21,6 +24,8 @@ public class DemoUI extends UI
 {
 
     private GridStackLayout gridStack;
+
+    private AtomicInteger eventCounter = new AtomicInteger(0);
 
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = DemoUI.class, widgetset = "org.vaadin.alump.gridstack.demo.DemoWidgetSet")
@@ -59,10 +64,13 @@ public class DemoUI extends UI
         gridStack.addComponent(new Label("Hello World"), 0, 0, 1, 1);
         gridStack.addComponent(new Label("Lorem ipsum"), 1, 0, 3, 1);
 
-        gridStack.addGridStackMoveListener(e -> {
-            System.out.println("Move from " + e.getOld().toString() + " to " + e.getNew().toString());
+        gridStack.addGridStackMoveListener(events -> {
+            final int eventId = eventCounter.getAndIncrement();
+            events.stream().forEach(event -> {
+                System.out.println("#" + eventId + " Move from " + event.getOld().toString() + " to "
+                        + event.getNew().toString());
+            });
         });
-
     }
 
     private Button createButton(Resource icon, Button.ClickListener listener) {
