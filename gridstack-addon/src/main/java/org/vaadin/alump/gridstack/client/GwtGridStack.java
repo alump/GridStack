@@ -19,6 +19,8 @@ package org.vaadin.alump.gridstack.client;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -65,19 +67,11 @@ public class GwtGridStack extends ComplexPanel {
 
     @Override
     public void add(Widget widget) {
-        add(widget, 0, 0, 1, 1);
+        add(widget, new GridStackChildOptions());
     }
 
     public void add(Widget widget, GridStackChildOptions info) {
-        if(info != null) {
-            add(widget, info.x, info.y, info.width, info.height);
-        } else {
-            add(widget);
-        }
-    }
-
-    public void add(Widget widget, int x, int y, int width, int height) {
-        Element wrapper = createWrapper(x, y, width, height);
+        Element wrapper = createWrapper(info);
         if(initialized) {
             addWidgetWrapperToGridStack(wrapper);
         } else {
@@ -94,17 +88,35 @@ public class GwtGridStack extends ComplexPanel {
         return super.remove(widget);
     }
 
-    protected Element createWrapper(int x, int y, int width, int height) {
+    protected Element createWrapper(GridStackChildOptions info) {
         Element wrapper = Document.get().createDivElement();
         wrapper.addClassName("grid-stack-item");
-        wrapper.setAttribute("data-gs-x", Integer.toString(x));
-        wrapper.setAttribute("data-gs-y", Integer.toString(y));
-        wrapper.setAttribute("data-gs-width", Integer.toString(width));
-        wrapper.setAttribute("data-gs-height", Integer.toString(height));
+        wrapper.setAttribute("data-gs-x", Integer.toString(info.x));
+        wrapper.setAttribute("data-gs-y", Integer.toString(info.y));
+        wrapper.setAttribute("data-gs-width", Integer.toString(info.width));
+        wrapper.setAttribute("data-gs-height", Integer.toString(info.height));
+
+        if(info.minWidth != null) {
+            wrapper.setAttribute("data-gs-min-width", Integer.toString(info.minWidth.intValue()));
+        }
+        if(info.maxWidth != null) {
+            wrapper.setAttribute("data-gs-max-width", Integer.toString(info.maxWidth.intValue()));
+        }
+        if(info.minHeight != null) {
+            wrapper.setAttribute("data-gs-min-height", Integer.toString(info.minHeight.intValue()));
+        }
+        if(info.maxHeight != null) {
+            wrapper.setAttribute("data-gs-max-width", Integer.toString(info.maxHeight.intValue()));
+        }
 
         Element content = Document.get().createDivElement();
-        content.addClassName("grid-stack-content");
+        content.addClassName("grid-stack-item-content");
         wrapper.appendChild(content);
+
+        Element dragHandle = Document.get().createDivElement();
+        dragHandle.addClassName("grid-stack-item-drag-handle");
+        dragHandle.getStyle().setDisplay(Display.NONE);
+        wrapper.appendChild(dragHandle);
 
         return wrapper;
     }

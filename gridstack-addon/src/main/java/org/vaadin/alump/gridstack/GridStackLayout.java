@@ -112,10 +112,20 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     public Component getComponent(int x, int y) {
+        return getComponent(x, y, false);
+    }
+
+    public Component getComponent(int x, int y, boolean acceptInsideHit) {
         for(Connector connector : getState().childOptions.keySet()) {
             GridStackChildOptions info = getState().childOptions.get(connector);
-            if(info.x == x && info.y == y) {
-                return (Component)connector;
+            if(acceptInsideHit) {
+                if(x >= info.x && y <= (info.x + info.width) && y >= info.y && y <= (info.y + info.width)) {
+                    return (Component) connector;
+                }
+            } else {
+                if (info.x == x && info.y == y) {
+                    return (Component) connector;
+                }
             }
         }
         return null;
@@ -129,8 +139,20 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     @Override
-    public void replaceComponent(Component component, Component component1) {
-        throw new IllegalStateException("Not implemented");
+    public void replaceComponent(Component oldComponent, Component newComponent) {
+        if(oldComponent == newComponent) {
+            return;
+        }
+        if(oldComponent.getParent() != this) {
+            throw new IllegalArgumentException("Replacable component not child of this layout");
+        }
+        GridStackChildOptions oldOptions = getState(false).childOptions.get(oldComponent);
+        removeComponent(oldComponent);
+
+        if(newComponent.getParent() == this) {
+            removeComponent(newComponent);
+        }
+        addComponent(newComponent, oldOptions.x, oldOptions.y, oldOptions.width, oldOptions.height);
     }
 
     @Override
@@ -208,5 +230,25 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         for(GridStackMoveEvent.GridStackMoveListener listener : moveListeners) {
             listener.onGridStackMove(events);
         }
+    }
+
+    /**
+     * Define size limitations to child component.
+     * @param child Child of this layout
+     * @param minWidth Mininum width in slots (null is undefined)
+     * @param maxWidth Maxium width in slots (null is undefined)
+     * @param minHeight Mininum height in slots (null is undefined)
+     * @param maxHeight Maximum height in slots (null is undefined)
+     */
+    public void setComponentSizeLimits(Component child, Integer minWidth, Integer maxWidth, Integer minHeight, Integer maxHeight) {
+        if(child.getParent() != this) {
+           throw new IllegalArgumentException("Given component is not child of this layout");
+        }
+
+        GridStackChildOptions childOpts = getState(true).childOptions.get(child);
+        childOpts.minWidth = minWidth;
+        childOpts.maxWidth = maxWidth;
+        childOpts.minHeight = minHeight;
+        childOpts.maxHeight = maxHeight;
     }
 }

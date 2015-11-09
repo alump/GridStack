@@ -3,9 +3,10 @@
  */
 
 $gridstack-columns: 12 !default;
-$gridstack_horizontal_padding: 20px !default;
+$gridstack_horizontal_padding: 12px !default;
 $gridstack_vertical_padding: 20px !default;
 $gridstack_animation_speed: .3s !default;
+$gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
 
 @mixin gridstackvendor($property, $value...){
   -webkit-#{$property}:$value;
@@ -24,8 +25,8 @@ $gridstack_animation_speed: .3s !default;
       margin: 0;
       position: absolute;
       top: 0;
-      left: $gridstack_horizontal_padding / 2;
-      right: $gridstack_horizontal_padding / 2;
+      left: $gridstack_item_padding;
+      right: $gridstack_item_padding;
       bottom: 0;
       width: auto;
       z-index: 0 !important;
@@ -94,14 +95,14 @@ $gridstack_animation_speed: .3s !default;
         @include gridstackvendor(transform, rotate(90deg));
       }
 
-      > .ui-resizable-nw { cursor: nw-resize; width: 20px; height: 20px; left: 10px; top: 0; }
+      > .ui-resizable-nw { cursor: nw-resize; width: 20px; height: 20px; left: $gridstack_item_padding; top: 0; }
       > .ui-resizable-n  { cursor: n-resize;  height: 10px; top: 0; left: 25px; right: 25px; }
-      > .ui-resizable-ne { cursor: ne-resize; width: 20px; height: 20px; right: 0; top: 0; }
-      > .ui-resizable-e  { cursor: e-resize;  width: 10px; right: $gridstack_horizontal_padding / 2; top: 15px; bottom: 15px; }
-      > .ui-resizable-se { cursor: se-resize; width: 20px; height: 20px; right: 0; bottom: 0; }
+      > .ui-resizable-ne { cursor: ne-resize; width: 20px; height: 20px; right: $gridstack_item_padding; top: 0; }
+      > .ui-resizable-e  { cursor: e-resize;  width: 10px; right: $gridstack_item_padding; top: 15px; bottom: 15px; }
+      > .ui-resizable-se { cursor: se-resize; width: 20px; height: 20px; right: $gridstack_item_padding; bottom: 0; }
       > .ui-resizable-s  { cursor: s-resize;  height: 10px; left: 25px; bottom: 0; right: 25px; }
-      > .ui-resizable-sw { cursor: sw-resize; width: 20px; height: 20px; left: 0; bottom: 0; }
-      > .ui-resizable-w  { cursor: w-resize;  width: 10px; left: $gridstack_horizontal_padding / 2; top: 15px; bottom: 15px; }
+      > .ui-resizable-sw { cursor: sw-resize; width: 20px; height: 20px; left: $gridstack_item_padding; bottom: 0; }
+      > .ui-resizable-w  { cursor: w-resize;  width: 10px; left: $gridstack_item_padding; top: 15px; bottom: 15px; }
 
       @for $i from 1 through $gridstack-columns {
         &[data-gs-width='#{$i}'] { width: (100% / $gridstack-columns) * $i; }
@@ -122,5 +123,19 @@ $gridstack_animation_speed: .3s !default;
       @include gridstackvendor(transition, left .0s, top .0s, height .0s, width .0s);
     }
 
+    .grid-stack-item-drag-handle {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 15px;
+      height: 15px;
+      background: black;
+      display: none;
+
+      &::after {
+        content: "\f047";
+        color: white;
+      }
+    }
   }
 }
