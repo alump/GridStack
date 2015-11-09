@@ -16,17 +16,22 @@ Try the add-on demo at http://app.siika.fi/GridStackDemo
 
 ### More than 8 columns in GridStackLayout are not sized correctly
 As part of sizing is done in CSS, in case of more than 8 columns you must:
-- Add unique stylename to your layout:
- ```java
- GridStackLayout gridstack = new GridStackLayout(12);
- gridstack.addStyleName("my-gridstacklayout");
- ```
-- Then in scss of your theme, add rule:
- ```scss
-  .grid-stack.my-gridstacklayout {
-    @include gridstacklayout-columns(12);
-  }
- ```
+
+Add unique stylename to your layout:
+
+```java
+GridStackLayout gridstack = new GridStackLayout(12);
+gridstack.addStyleName("my-gridstacklayout");
+```
+
+Then in scss of your theme, add rule:
+
+```scss
+.grid-stack.my-gridstacklayout {
+   @include gridstacklayout-columns(12);
+}
+```
+
 After this you should have all 12 columns sized correctly to take 8.333...% of width.
 
 ## Download release
