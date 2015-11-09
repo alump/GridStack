@@ -17,28 +17,31 @@
  */
 package org.vaadin.alump.gridstack.client;
 
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.client.Util;
 import com.vaadin.client.ui.AbstractLayoutConnector;
 
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.LayoutClickEventHandler;
 import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.LayoutClickRpc;
 import org.vaadin.alump.gridstack.client.shared.GridStackMoveData;
 import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
 import org.vaadin.alump.gridstack.client.shared.GridStackLayoutState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Connect(org.vaadin.alump.gridstack.GridStackLayout.class)
 public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
-
-	public GridStackLayoutConnector() {
-
-	}
+    private final static Logger LOGGER = Logger.getLogger(GridStackLayoutConnector.class.getName());
 
     @Override
     public void init() {
@@ -85,9 +88,11 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 	@Override
 	public void onStateChanged(StateChangeEvent event) {
 		super.onStateChanged(event);
+        clickEventHandler.handleEventHandlerRegistration();
 
         if(event.isInitialStateChange() || event.hasPropertyChanged("gridStackProperties")) {
-            getWidget().setOptions(GwtGridStackOptions.createFrom(getState().gridStackOptions));
+            getWidget().setOptions(getState().gridStackOptions.width, getState().gridStackOptions.height,
+                    GwtGridStackOptions.createFrom(getState().gridStackOptions));
         }
 
         if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {
@@ -123,4 +128,26 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
     public void updateCaption(ComponentConnector componentConnector) {
         //ignore for now
     }
+
+    private final LayoutClickEventHandler clickEventHandler = new LayoutClickEventHandler(this) {
+
+        @Override
+        protected ComponentConnector getChildComponent(Element element) {
+            return Util.getConnectorForElement(getConnection(), getWidget(),
+                    element);
+        }
+
+        @Override
+        protected LayoutClickRpc getLayoutClickRPC() {
+            return getRpcProxy(GridStackServerRpc.class);
+        };
+
+        @Override
+        protected void fireClick(NativeEvent event) {
+            // Because of event handling in js library, resize/dragging causes clicks to parent element
+            if(getWidget().isClickOk()) {
+                super.fireClick(event);
+            }
+        }
+    };
 }

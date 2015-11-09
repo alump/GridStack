@@ -1,5 +1,6 @@
 package org.vaadin.alump.gridstack.demo;
 
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
 
@@ -10,7 +11,6 @@ import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackLayout;
-import sun.awt.windows.ThemeReader;
 
 import java.time.Instant;
 import java.util.Iterator;
@@ -38,10 +38,13 @@ public class DemoUI extends UI
     @Override
     protected void init(VaadinRequest request) {
 
-        gridStack = new GridStackLayout();
-        //gridStack.getOptions().staticGrid = true;
+        // By default gridstack has three columns
+        gridStack = new GridStackLayout(8);
+        // See styles.scss of this demo project how to handle columns sizes on CSS size
+        gridStack.addStyleName("eight-column-grid-stack");
         gridStack.getOptions().minWidth = 300;
-        gridStack.getOptions().verticalMargin = 10;
+        gridStack.getOptions().verticalMargin = 12;
+        gridStack.getOptions().cellHeight = 80;
 
         // Show it in the middle of the screen
         final VerticalLayout layout = new VerticalLayout();
@@ -53,17 +56,33 @@ public class DemoUI extends UI
 
         layout.addComponent(createToolbar());
 
-        layout.addComponent(gridStack);
+        Panel gridStackWrapper = new Panel();
+        gridStackWrapper.addStyleName("gridstack-wrapper");
+        gridStackWrapper.setSizeFull();
+        layout.addComponent(gridStackWrapper);
+        layout.setExpandRatio(gridStackWrapper, 1f);
+
+        layout.addComponent(new Link(
+                "This project is based on gridstack.js JavaScript library, written by Pavel Reznikov",
+                new ExternalResource("https://github.com/troolee/gridstack.js")));
+
+        // ----
+
+        gridStackWrapper.setContent(gridStack);
         gridStack.setSizeFull();
-        layout.setExpandRatio(gridStack, 1f);
+
         gridStack.addComponent(new Label("Hello World"), 0, 0, 1, 1);
-        gridStack.addComponent(new Label("Lorem ipsum"), 1, 0, 3, 1);
+
+        Component locked = new Label("This is \"locked\" (moving other children will not move this)");
+        gridStack.addComponent(locked, 1, 0, 3, 1);
+        gridStack.setComponentLocked(locked, true);
+
         gridStack.addComponent(createForm(), 0, 1, 2, 3);
         gridStack.addComponent(createConsole(), 0, 2, 4, 2);
 
         Component image = createImage();
-        gridStack.addComponent(image, 2, 1, 3, 3);
-        gridStack.setComponentSizeLimits(image, 3, null, 3, null);
+        gridStack.addComponent(image, 2, 1, 3, 2);
+        gridStack.setComponentSizeLimits(image, 3, null, 2, null);
 
         gridStack.addGridStackMoveListener(events -> {
             final int eventId = eventCounter.getAndIncrement();
@@ -82,7 +101,7 @@ public class DemoUI extends UI
 
         toolbar.addComponent(createButton(FontAwesome.PLUS, e -> {
             int index = gridStack.getComponentCount();
-            gridStack.addComponent(new Label("Hep #" + index), 0, index - 1, index, 1);
+            gridStack.addComponent(new Label("Hep #" + index), -1, -1, 1 + rand.nextInt(3), 1);
         }));
 
         toolbar.addComponent(createButton(FontAwesome.MINUS, e -> {
@@ -93,6 +112,16 @@ public class DemoUI extends UI
             }
             gridStack.removeComponent(iter.next());
         }));
+
+        CheckBox layoutClicks = new CheckBox("Layout clicks");
+        layoutClicks.addValueChangeListener(e -> {
+            if((Boolean)e.getProperty().getValue()) {
+                gridStack.addLayoutClickListener(layoutClickListener);
+            } else {
+                gridStack.removeLayoutClickListener(layoutClickListener);
+            }
+        });
+        toolbar.addComponent(layoutClicks);
 
         return toolbar;
     }
@@ -129,6 +158,7 @@ public class DemoUI extends UI
 
     private Component createConsole() {
         VerticalLayout layout = new VerticalLayout();
+        layout.addStyleName("eventconsole-wrapper");
         layout.setSizeFull();
         eventConsole.setCaption("Event console");
         eventConsole.setSizeFull();
@@ -137,8 +167,18 @@ public class DemoUI extends UI
     }
 
     private Component createImage() {
+        CssLayout wrapper = new CssLayout();
+        wrapper.setSizeFull();
+        wrapper.addStyleName("image-wrapper");
+
         Image image = new Image(null, new ThemeResource("images/rude.jpg"));
-        return image;
+        wrapper.addComponent(image);
+        return wrapper;
     }
+
+    LayoutEvents.LayoutClickListener layoutClickListener = e -> {
+        String childHit = e.getChildComponent() != null ? "at child" : "at background";
+        addEvent("Layout clicked at " + e.getClientX() + "," + e.getClientY() + " " + childHit);
+    };
 
 }

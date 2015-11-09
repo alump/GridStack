@@ -19,13 +19,13 @@ package org.vaadin.alump.gridstack.client;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -39,6 +39,11 @@ public class GwtGridStack extends ComplexPanel {
     public final String elementId;
 
     protected GwtGridStackMoveHandler moveHandler = null;
+
+    protected long lastEvent = 0;
+    protected boolean draggedOrResized = false;
+
+    public final static long DISABLE_CLICK_AFTER_EVENT_MS = 100L;
 
     public interface GwtGridStackMoveHandler {
         void onWidgetsMoved(Widget[] widgets, GwtGridStackChangedItem[] data);
@@ -56,8 +61,14 @@ public class GwtGridStack extends ComplexPanel {
         return initialized;
     }
 
-    public void setOptions(GwtGridStackOptions options) {
+    public void setOptions(Integer width, Integer height, GwtGridStackOptions options) {
         if(!initialized) {
+            if(width != null) {
+                getElement().setAttribute("data-gs-width", width.toString());
+            }
+            if(height != null) {
+                getElement().setAttribute("data-gs-height", height.toString());
+            }
             initializeGridStack(options);
             initialized = true;
         } else {
@@ -83,7 +94,9 @@ public class GwtGridStack extends ComplexPanel {
     @Override
     public boolean remove(Widget widget) {
         if(initialized) {
-            removeWidgetWrapperFromGridStack(widget.getElement().getParentElement().getParentElement());
+            Element wrapper = widget.getElement().getParentElement().getParentElement();
+            removeWidgetWrapperFromGridStack(wrapper);
+            wrapper.removeFromParent();
         }
         return super.remove(widget);
     }
@@ -91,8 +104,12 @@ public class GwtGridStack extends ComplexPanel {
     protected Element createWrapper(GridStackChildOptions info) {
         Element wrapper = Document.get().createDivElement();
         wrapper.addClassName("grid-stack-item");
-        wrapper.setAttribute("data-gs-x", Integer.toString(info.x));
-        wrapper.setAttribute("data-gs-y", Integer.toString(info.y));
+        if(info.x >= 0 && info.y >= 0) {
+            wrapper.setAttribute("data-gs-x", Integer.toString(info.x));
+            wrapper.setAttribute("data-gs-y", Integer.toString(info.y));
+        } else {
+            wrapper.setAttribute("data-gs-auto-position", "yes");
+        }
         wrapper.setAttribute("data-gs-width", Integer.toString(info.width));
         wrapper.setAttribute("data-gs-height", Integer.toString(info.height));
 
@@ -107,6 +124,10 @@ public class GwtGridStack extends ComplexPanel {
         }
         if(info.maxHeight != null) {
             wrapper.setAttribute("data-gs-max-width", Integer.toString(info.maxHeight.intValue()));
+        }
+
+        if(info.locked) {
+            wrapper.setAttribute("data-gs-locked", "yes");
         }
 
         Element content = Document.get().createDivElement();
@@ -145,6 +166,27 @@ public class GwtGridStack extends ComplexPanel {
         moveHandler.onWidgetsMoved(widgets, items);
     }
 
+    protected void onGridStackDragStart(Event event) {
+        updateEventFlag(true);
+    }
+
+    protected void onGridStackDragStop(Event event) {
+        updateEventFlag(false);
+    }
+
+    protected void onGridStackResizeStart(Event event) {
+        updateEventFlag(true);
+    }
+
+    protected void onGridStackResizeStop(Event event) {
+        updateEventFlag(false);
+    }
+
+    protected void updateEventFlag(boolean start) {
+        draggedOrResized = start;
+        lastEvent = new Date().getTime();
+    }
+
     protected Widget mapElementToWidget(Element element) {
         Iterator<Widget> iter = getChildren().iterator();
         while(iter.hasNext()) {
@@ -165,9 +207,19 @@ public class GwtGridStack extends ComplexPanel {
             var element = $wnd.$('#' + elementId);
             element.gridstack(options);
             element.on('change', function(e, items) {
-                console.log('change!');
-                console.log(items);
                 that.@org.vaadin.alump.gridstack.client.GwtGridStack::onGridStackChange(*)(e, items);
+            });
+            element.on('dragstart', function(e, items) {
+                that.@org.vaadin.alump.gridstack.client.GwtGridStack::onGridStackDragStart(*)(e);
+            });
+            element.on('dragstop', function(e, items) {
+                that.@org.vaadin.alump.gridstack.client.GwtGridStack::onGridStackDragStop(*)(e);
+            });
+            element.on('resizestart', function(e, items) {
+                that.@org.vaadin.alump.gridstack.client.GwtGridStack::onGridStackResizeStart(*)(e);
+            });
+            element.on('resizestop', function(e, items) {
+                that.@org.vaadin.alump.gridstack.client.GwtGridStack::onGridStackResizeStop(*)(e);
             });
         });
     }-*/;
@@ -198,6 +250,8 @@ public class GwtGridStack extends ComplexPanel {
     public void updateChild(Widget widget, GridStackChildOptions options) {
         Element wrapper = widget.getElement().getParentElement().getParentElement();
         updateWidgetWrapper(wrapper, options.x, options.y, options.width, options.height);
+        updateWidgetSizeLimits(wrapper, GwtGridSizeLimits.create(options));
+        setLocked(wrapper, options.locked);
     }
 
     protected native final void updateWidgetWrapper(Element element, int x, int y, int width, int height)
@@ -205,9 +259,35 @@ public class GwtGridStack extends ComplexPanel {
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
-            grid.update(element, x, y, width, height);
+            if(x >= 0 && y >= 0) {
+                grid.update(element, x, y, width, height);
+            } else {
+                grid.resize(element, width, height);
+            }
         });
     }-*/;
+
+    protected native final void updateWidgetSizeLimits(Element element, GwtGridSizeLimits values)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.min_width(element, values.min_width);
+            //grid.max_width(element, values.max_width);
+            grid.min_height(element, values.min_height);
+            //grid.max_height(element, values.max_height);
+        });
+    }-*/;
+
+    protected native final void setLocked(Element element, boolean locked)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.locked(element, locked);
+        });
+    }-*/;
+
 
     public void commit() {
         nativeCommit();
@@ -234,4 +314,8 @@ public class GwtGridStack extends ComplexPanel {
             grid.batch_update();
         });
     }-*/;
+
+    public boolean isClickOk() {
+        return !draggedOrResized && new Date().getTime() > (lastEvent + DISABLE_CLICK_AFTER_EVENT_MS);
+    }
 }

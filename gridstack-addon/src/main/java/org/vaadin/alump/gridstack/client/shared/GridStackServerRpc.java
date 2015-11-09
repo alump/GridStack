@@ -18,12 +18,13 @@
 package org.vaadin.alump.gridstack.client.shared;
 
 import com.vaadin.shared.communication.ServerRpc;
+import com.vaadin.shared.ui.LayoutClickRpc;
 
 import java.util.List;
 
 /**
  * ServerRpc for GridStack
  */
-public interface GridStackServerRpc extends ServerRpc {
+public interface GridStackServerRpc extends LayoutClickRpc {
     void onChildrenMoved(List<GridStackMoveData> moves);
 }

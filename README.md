@@ -1,64 +1,48 @@
-# GridStack Add-on for Vaadin 7
+# GridStack Add-on for Vaadin 7.5+
 
-This add-on provides GridStackLayout layout component that uses gridstack.js on client side.
+This add-on provides GridStackLayout layout component that uses [gridstack.js](https://github.com/troolee/gridstack.js) on client side.
+
+[![Build Status](http://siika.fi:8888/jenkins/job/GridStack%20(Vaadin)/badge/icon)](http://siika.fi:8888/jenkins/job/GridStack%20(Vaadin)/)
+
+## Code example
+
+As code is in experimental stage, please check the DemoUI class.
 
 ## Online demo
 
 Try the add-on demo at http://app.siika.fi/GridStackDemo
 
+## FAQ
+
+### More than 8 columns in GridStackLayout are not sized correctly
+As part of sizing is done in CSS, in case of more than 8 columns you must:
+- Add unique stylename to your layout:
+ ```java
+ GridStackLayout gridstack = new GridStackLayout(12);
+ gridstack.addStyleName("my-gridstacklayout");
+ ```
+- Then in scss of your theme, add rule:
+ ```scss
+  .grid-stack.my-gridstacklayout {
+    @include gridstacklayout-columns(12);
+  }
+ ```
+After this you should have all 12 columns sized correctly to take 8.333...% of width.
+
 ## Download release
 
 Official releases of this add-on are available at Vaadin Directory. For Maven instructions, download and reviews, go to http://vaadin.com/addon/gridstack
 
-## Building and running demo
-
-git clone <url of the MyComponent repository>
-mvn clean install
-cd demo
-mvn jetty:run
-
-To see the demo, navigate to http://localhost:8080/
-
-## Development with Eclipse IDE
-
-For further development of this add-on, the following tool-chain is recommended:
-- Eclipse IDE
-- m2e wtp plug-in (install it from Eclipse Marketplace)
-- Vaadin Eclipse plug-in (install it from Eclipse Marketplace)
-- JRebel Eclipse plug-in (install it from Eclipse Marketplace)
-- Chrome browser
-
-### Importing project
-
-Choose File > Import... > Existing Maven Projects
-
-Note that Eclipse may give "Plugin execution not covered by lifecycle configuration" errors for pom.xml. Use "Permanently mark goal resources in pom.xml as ignored in Eclipse build" quick-fix to mark these errors as permanently ignored in your project. Do not worry, the project still works fine. 
-
-### Debugging server-side
-
-If you have not already compiled the widgetset, do it now by running vaadin:install Maven target for gridstack-root project.
-
-If you have a JRebel license, it makes on the fly code changes faster. Just add JRebel nature to your gridstack-demo project by clicking project with right mouse button and choosing JRebel > Add JRebel Nature
-
-To debug project and make code modifications on the fly in the server-side, right-click the gridstack-demo project and choose Debug As > Debug on Server. Navigate to http://localhost:8080/gridstack-demo/ to see the application.
-
-### Debugging client-side
-
-The most common way of debugging and making changes to the client-side code is dev-mode. To create debug configuration for it, open gridstack-demo project properties and click "Create Development Mode Launch" button on the Vaadin tab. Right-click newly added "GWT development mode for gridstack-demo.launch" and choose Debug As > Debug Configurations... Open up Classpath tab for the development mode configuration and choose User Entries. Click Advanced... and select Add Folders. Choose Java and Resources under gridstack/src/main and click ok. Now you are ready to start debugging the client-side code by clicking debug. Click Launch Default Browser button in the GWT Development Mode in the launched application. Now you can modify and breakpoints to client-side classes and see changes by reloading the web page. 
-
-Another way of debugging client-side is superdev mode. To enable it, uncomment devModeRedirectEnabled line from the end of DemoWidgetSet.gwt.xml located under gridstack-demo resources folder and compile the widgetset once by running vaadin:compile Maven target for gridstack-demo. Refresh gridstack-demo project resources by right clicking the project and choosing Refresh. Click "Create SuperDevMode Launch" button on the Vaadin tab of the gridstack-demo project properties panel to create superder mode code server launch configuration and modify the class path as instructed above. After starting the code server by running SuperDevMode launch as Java application, you can navigate to http://localhost:8080/gridstack-demo/?superdevmode. Now all code changes you do to your client side will get compiled as soon as you reload the web page. You can also access Java-sources and set breakpoints inside Chrome if you enable source maps from inspector settings. 
-
- 
 ## Release notes
 
-### Version 0.0.1-SNAPSHOT
-- TBD
+### Version 0.1.0 (2015-11-09)
+- Initial release. Not all features supported yet, but should allow basic usage
 
 ## Roadmap
+- Touch device support will require extra dependency and testing
 
 This component is developed as a hobby with no public roadmap or any guarantees of upcoming releases. That said, the following features are planned for upcoming releases:
-- ...
-- ...
+- Adding missing functionality of gridstack.js to server side API
 
 ## Issue tracking
 
@@ -74,6 +58,15 @@ Contributions are welcome, but there are no guarantees that they are accepted as
 - Send a pull request for the original project
 - Comment on the original issue that you have implemented a fix for it
 
+## Building and running demo
+
+git clone https://github.com/alump/GridStack.git
+mvn clean install
+cd demo
+mvn jetty:run
+
+To see the demo, navigate to http://localhost:8080/
+
 ## Licenses & Authors
 
 ### Vaadin add-on and integration
@@ -88,30 +81,5 @@ https://github.com/lodash/lodash/blob/master/LICENSE, The Dojo Foundation, https
 ### jQuery UI
 MIT License, The jQuery Foundation and other contributors, https://jqueryui.com/
 
-# Developer Guide
-
-## Getting started
-
-Here is a simple example on how to try out the add-on component:
-
-<...>
-
-For a more comprehensive example, see src/test/java/org/vaadin/template/demo/DemoUI.java
-
-## Features
-
-### Feature A
-
-<...>
-
-### Feature B
-
-<...>
-
-### Feature C
-
-<...>
-
-## API
-
-MyComponent JavaDoc is available online at <...>
+### jQuery
+https://github.com/jquery/jquery/blob/master/LICENSE.txt, The jQuery Foundation and other contributors

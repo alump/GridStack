@@ -31,5 +31,4 @@ public class GridStackLayoutState extends AbstractLayoutState {
     public Map<Connector, GridStackChildOptions> childOptions = new HashMap<Connector,GridStackChildOptions>();
 
     public GridStackOptions gridStackOptions = new GridStackOptions();
-
 }

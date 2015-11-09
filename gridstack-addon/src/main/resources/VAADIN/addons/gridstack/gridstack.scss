@@ -2,7 +2,7 @@
  * This SCSS file is based on gridstack.scss by Pavel Reznikov, http://troolee.github.io/gridstack.js/
  */
 
-$gridstack-columns: 12 !default;
+$gridstack_columns: 3 !default;
 $gridstack_horizontal_padding: 12px !default;
 $gridstack_vertical_padding: 20px !default;
 $gridstack_animation_speed: .3s !default;
@@ -14,6 +14,20 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
   -ms-#{$property}:$value;
   -o-#{$property}:$value;
   #{$property}:$value;
+}
+
+@mixin gridstacklayout-columns($gridstack-columns: 3) {
+  > .grid-stack-item {
+    min-width: 100% / $gridstack-columns;
+
+    @for $i from 1 through $gridstack-columns {
+      &[data-gs-width='#{$i}'] { width: (100% / $gridstack-columns) * $i; }
+      &[data-gs-x='#{$i}'] { left: (100% / $gridstack-columns) * $i; }
+      &[data-gs-min-width='#{$i}'] { min-width: (100% / $gridstack-columns) * $i; }
+      &[data-gs-max-width='#{$i}'] { max-width: (100% / $gridstack-columns) * $i; }
+    }
+  }
+
 }
 
 @mixin gridstack {
@@ -33,7 +47,6 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
     }
 
     > .grid-stack-item {
-      min-width: 100% / $gridstack-columns;
       position: absolute;
       padding: 0;
 
@@ -103,13 +116,6 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
       > .ui-resizable-s  { cursor: s-resize;  height: 10px; left: 25px; bottom: 0; right: 25px; }
       > .ui-resizable-sw { cursor: sw-resize; width: 20px; height: 20px; left: $gridstack_item_padding; bottom: 0; }
       > .ui-resizable-w  { cursor: w-resize;  width: 10px; left: $gridstack_item_padding; top: 15px; bottom: 15px; }
-
-      @for $i from 1 through $gridstack-columns {
-        &[data-gs-width='#{$i}'] { width: (100% / $gridstack-columns) * $i; }
-        &[data-gs-x='#{$i}'] { left: (100% / $gridstack-columns) * $i; }
-        &[data-gs-min-width='#{$i}'] { min-width: (100% / $gridstack-columns) * $i; }
-        &[data-gs-max-width='#{$i}'] { max-width: (100% / $gridstack-columns) * $i; }
-      }
     }
 
     &.grid-stack-animate,
@@ -136,6 +142,41 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
         content: "\f047";
         color: white;
       }
+    }
+    @include gridstacklayout-columns($gridstack_columns);
+
+    &.with-1-columns {
+      @include gridstacklayout-columns(1);
+    }
+
+    &.with-2-columns {
+      @include gridstacklayout-columns(2);
+    }
+
+    /* current default, no need to redefine
+    &.with-three-columns {
+      @include gridstacklayout-columns(3);
+    }
+    */
+
+    &.with-4-columns {
+      @include gridstacklayout-columns(4);
+    }
+
+    &.with-5-columns {
+      @include gridstacklayout-columns(5);
+    }
+
+    &.with-6-columns {
+      @include gridstacklayout-columns(6);
+    }
+
+    &.with-7-columns {
+      @include gridstacklayout-columns(7);
+    }
+
+    &.with-8-columns {
+      @include gridstacklayout-columns(8);
     }
   }
 }

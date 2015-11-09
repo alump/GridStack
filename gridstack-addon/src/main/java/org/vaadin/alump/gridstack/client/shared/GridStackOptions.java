@@ -40,5 +40,5 @@ public class GridStackOptions implements Serializable {
     //TODO resizable
     public Boolean staticGrid = null;
     public Integer verticalMargin = null;
-    public Integer width = null;
+    public Integer width = 3;
 }
