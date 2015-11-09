@@ -5,7 +5,7 @@
 	<groupId>org.vaadin.alump.gridstack</groupId>
 	<artifactId>gridstack-demo</artifactId>
 	<packaging>war</packaging>
-	<version>0.1.0</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<name>GridStack Add-on Demo</name>
 
 	<properties>

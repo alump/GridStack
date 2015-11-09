@@ -101,7 +101,16 @@ public class DemoUI extends UI
 
         toolbar.addComponent(createButton(FontAwesome.PLUS, e -> {
             int index = gridStack.getComponentCount();
-            gridStack.addComponent(new Label("Hep #" + index), -1, -1, 1 + rand.nextInt(3), 1);
+            final CssLayout layout = new CssLayout();
+            layout.addStyleName("hep-layout");
+            layout.addComponent(new Label("Hep #" + index));
+            Button button = new Button("Remove this", ce -> {
+                gridStack.removeComponent(layout);
+            });
+            button.addStyleName(ValoTheme.BUTTON_SMALL);
+            button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+            layout.addComponent(button);
+            gridStack.addComponent(layout, -1, -1, 1 + rand.nextInt(3), 1);
         }));
 
         toolbar.addComponent(createButton(FontAwesome.MINUS, e -> {
