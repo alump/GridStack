@@ -90,9 +90,9 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 		super.onStateChanged(event);
         clickEventHandler.handleEventHandlerRegistration();
 
-        if(event.isInitialStateChange() || event.hasPropertyChanged("gridStackProperties")) {
+        if(event.isInitialStateChange() || event.hasPropertyChanged("gridStackOptions")) {
             getWidget().setOptions(getState().gridStackOptions.width, getState().gridStackOptions.height,
-                    GwtGridStackOptions.createFrom(getState().gridStackOptions));
+                    getState().gridStackOptions);
         }
 
         if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {

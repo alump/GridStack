@@ -116,6 +116,55 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
       > .ui-resizable-s  { cursor: s-resize;  height: 10px; left: 25px; bottom: 0; right: 25px; }
       > .ui-resizable-sw { cursor: sw-resize; width: 20px; height: 20px; left: $gridstack_item_padding; bottom: 0; }
       > .ui-resizable-w  { cursor: w-resize;  width: 10px; left: $gridstack_item_padding; top: 15px; bottom: 15px; }
+
+      .grid-stack-item-drag-handle.separate-handle {
+        position: absolute;
+        top: 0;
+        left: $gridstack_item_padding;
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        background: rgba(0,0,0,0.5);
+        cursor: move;
+        display: none;
+        opacity: 0.5;
+        z-index: 90;
+
+        &::after {
+          font-family: FontAwesome;
+          content: "\f047";
+          color: white;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+          display: inline-block;
+          font-size: 12px;
+          line-height: 20px;
+          width: 20px;
+          height: 20px;
+          top: 0;
+          left: 0;
+          position: absolute;
+          text-align: center;
+          vertical-align: middle;
+        }
+      }
+
+      &:hover .grid-stack-item-drag-handle.separate-handle {
+        display: block;
+      }
+
+      .grid-stack-item-drag-handle.separate-handle:hover {
+        opacity: 1.0;
+      }
+    }
+
+    &.grid-stack-static > .grid-stack-item {
+      .ui-resizable-handle {
+        display: none !important;
+      }
+
+      .grid-stack-item-drag-handle.separate-handle {
+        display: none !important;
+      }
     }
 
     &.grid-stack-animate,
@@ -129,20 +178,6 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
       @include gridstackvendor(transition, left .0s, top .0s, height .0s, width .0s);
     }
 
-    .grid-stack-item-drag-handle {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      width: 15px;
-      height: 15px;
-      background: black;
-      display: none;
-
-      &::after {
-        content: "\f047";
-        color: white;
-      }
-    }
     @include gridstacklayout-columns($gridstack_columns);
 
     &.with-1-columns {

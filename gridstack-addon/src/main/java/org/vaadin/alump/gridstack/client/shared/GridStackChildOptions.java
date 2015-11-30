@@ -34,6 +34,6 @@ public class GridStackChildOptions implements Serializable {
     public Integer maxHeight = null;
     public boolean locked = false;
 
-    public boolean showDragHandle = false;
+    public boolean useDragHandle = false;
     public String styleName = null;
 }

@@ -31,7 +31,8 @@ public class DemoUI extends UI
     private Random rand = new Random(0xDEADBEEF);
 
     @WebServlet(value = "/*", asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = DemoUI.class, widgetset = "org.vaadin.alump.gridstack.demo.DemoWidgetSet")
+    @VaadinServletConfiguration(productionMode = false, ui = DemoUI.class,
+            widgetset = "org.vaadin.alump.gridstack.demo.DemoWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
 
@@ -71,14 +72,15 @@ public class DemoUI extends UI
         gridStackWrapper.setContent(gridStack);
         gridStack.setSizeFull();
 
-        gridStack.addComponent(new Label("Hello World"), 0, 0, 1, 1);
+        gridStack.addComponent(new Label("This child can be dragged without handle. Please use separate handle "
+            + "(default mode) when you child component is, or has, an active Vaadin component."), 0, 0, 1, 3, false);
 
         Component locked = new Label("This is \"locked\" (moving other children will not move this)");
         gridStack.addComponent(locked, 1, 0, 3, 1);
         gridStack.setComponentLocked(locked, true);
 
-        gridStack.addComponent(createForm(), 0, 1, 2, 3);
-        gridStack.addComponent(createConsole(), 0, 2, 4, 2);
+        gridStack.addComponent(createForm(), 0, 5, 2, 3);
+        gridStack.addComponent(createConsole(), 0, 3, 4, 2);
 
         Component image = createImage();
         gridStack.addComponent(image, 2, 1, 3, 2);
@@ -123,6 +125,7 @@ public class DemoUI extends UI
         }));
 
         CheckBox layoutClicks = new CheckBox("Layout clicks");
+        layoutClicks.setDescription("Adds layout click listener to GridStackLayout");
         layoutClicks.addValueChangeListener(e -> {
             if((Boolean)e.getProperty().getValue()) {
                 gridStack.addLayoutClickListener(layoutClickListener);
@@ -131,6 +134,13 @@ public class DemoUI extends UI
             }
         });
         toolbar.addComponent(layoutClicks);
+
+        CheckBox staticGrid = new CheckBox("Static");
+        staticGrid.setDescription("If static, dragging and resizing are not allowed");
+        staticGrid.addValueChangeListener(e -> {
+            gridStack.setStaticGrid((Boolean)e.getProperty().getValue());
+        });
+        toolbar.addComponent(staticGrid);
 
         return toolbar;
     }
@@ -151,17 +161,21 @@ public class DemoUI extends UI
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
+        layout.setWidth(100, Unit.PERCENTAGE);
         TextField username = new TextField();
+        username.setWidth(100, Unit.PERCENTAGE);
         username.addStyleName(ValoTheme.TEXTFIELD_SMALL);
         username.setCaption("Username:");
         layout.addComponent(username);
         PasswordField password = new PasswordField();
+        password.setWidth(100, Unit.PERCENTAGE);
         password.addStyleName(ValoTheme.TEXTFIELD_SMALL);
         password.setCaption("Password:");
         layout.addComponent(password);
         Button login = new Button("Login", e-> Notification.show("Logged in?"));
         login.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(login);
+        layout.setComponentAlignment(login, Alignment.BOTTOM_RIGHT);
         return layout;
     }
 
@@ -186,8 +200,21 @@ public class DemoUI extends UI
     }
 
     LayoutEvents.LayoutClickListener layoutClickListener = e -> {
-        String childHit = e.getChildComponent() != null ? "at child" : "at background";
-        addEvent("Layout clicked at " + e.getClientX() + "," + e.getClientY() + " " + childHit);
+        boolean clickedAtChild = e.getChildComponent() != null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("User clicked at [")
+                .append(e.getClientX())
+                .append(",")
+                .append(e.getClientY())
+                .append("] ");
+        sb.append(clickedAtChild ? "at child" : "at background.");
+
+        if(clickedAtChild) {
+            sb.append(": ");
+            sb.append(gridStack.getCoordinates(e.getChildComponent()).toString());
+        }
+
+        addEvent(sb.toString());
     };
 
 }

@@ -60,6 +60,9 @@ public class GwtGridStackOptions extends JavaScriptObject {
         if(options.width != null) {
             obj.setWidth(options.width);
         }
+        if(options.handleClass != null) {
+            obj.setHandleClass(options.handleClass);
+        }
         return obj;
     }
 
@@ -141,6 +144,16 @@ public class GwtGridStackOptions extends JavaScriptObject {
     public final native void setWidth(int width)
     /*-{
         this.width = width;
+    }-*/;
+
+    public final native String getHandleClass()
+    /*-{
+        return this.handle_class;
+    }-*/;
+
+    public final native void setHandleClass(String handleClass)
+    /*-{
+        this.handle_class = handleClass;
     }-*/;
 
 }

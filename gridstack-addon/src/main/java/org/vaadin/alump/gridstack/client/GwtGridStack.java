@@ -19,11 +19,11 @@ package org.vaadin.alump.gridstack.client;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
+import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +47,9 @@ public class GwtGridStack extends ComplexPanel {
 
     public final static long DISABLE_CLICK_AFTER_EVENT_MS = 100L;
 
+    public final static String CONTENT_CLASSNAME = "grid-stack-item-content";
+    public final static String DRAG_HANDLE_CLASSNAME = GridStackOptions.DRAG_HANDLE_CLASSNAME;
+
     public interface GwtGridStackMoveHandler {
         void onWidgetsMoved(Widget[] widgets, GwtGridStackChangedItem[] data);
     }
@@ -63,19 +66,30 @@ public class GwtGridStack extends ComplexPanel {
         return initialized;
     }
 
-    public void setOptions(Integer width, Integer height, GwtGridStackOptions options) {
+    public void setOptions(Integer width, Integer height, GridStackOptions options) {
         if(!initialized) {
-            if(width != null) {
-                getElement().setAttribute("data-gs-width", width.toString());
-            }
-            if(height != null) {
-                getElement().setAttribute("data-gs-height", height.toString());
-            }
-            initializeGridStack(options);
-            initialized = true;
+            initialize(width, height, GwtGridStackOptions.createFrom(options));
         } else {
-            //TODO
+            if(options.staticGrid != null) {
+                nativeSetGridStatic(options.staticGrid.booleanValue());
+            }
         }
+    }
+
+    public void initialize(Integer width, Integer height, GwtGridStackOptions options) {
+        if(initialized) {
+            LOGGER.severe("gridstack already initialized");
+            return;
+        }
+
+        if(width != null) {
+            getElement().setAttribute("data-gs-width", width.toString());
+        }
+        if(height != null) {
+            getElement().setAttribute("data-gs-height", height.toString());
+        }
+        initializeGridStack(options);
+        initialized = true;
     }
 
     @Override
@@ -106,6 +120,7 @@ public class GwtGridStack extends ComplexPanel {
     protected Element createWrapper(GridStackChildOptions info) {
         Element wrapper = Document.get().createDivElement();
         wrapper.addClassName("grid-stack-item");
+
         if(info.x >= 0 && info.y >= 0) {
             wrapper.setAttribute("data-gs-x", Integer.toString(info.x));
             wrapper.setAttribute("data-gs-y", Integer.toString(info.y));
@@ -133,13 +148,20 @@ public class GwtGridStack extends ComplexPanel {
         }
 
         Element content = Document.get().createDivElement();
-        content.addClassName("grid-stack-item-content");
+        content.addClassName(CONTENT_CLASSNAME);
+
+        if(!info.useDragHandle) {
+            content.addClassName(DRAG_HANDLE_CLASSNAME);
+        }
+
         wrapper.appendChild(content);
 
-        Element dragHandle = Document.get().createDivElement();
-        dragHandle.addClassName("grid-stack-item-drag-handle");
-        dragHandle.getStyle().setDisplay(Display.NONE);
-        wrapper.appendChild(dragHandle);
+        if(info.useDragHandle) {
+            Element dragHandle = Document.get().createDivElement();
+            dragHandle.addClassName("separate-handle");
+            dragHandle.addClassName(DRAG_HANDLE_CLASSNAME);
+            wrapper.appendChild(dragHandle);
+        }
 
         return wrapper;
     }
@@ -261,6 +283,14 @@ public class GwtGridStack extends ComplexPanel {
         updateWidgetWrapper(wrapper, options.x, options.y, options.width, options.height);
         updateWidgetSizeLimits(wrapper, GwtGridSizeLimits.create(options));
         setLocked(wrapper, options.locked);
+
+        /* Make sure draghandle style name is at right place
+        Element contentElement = wrapper.getFirstChildElement();
+        if(options.useDragHandle) {
+            contentElement.removeClassName(DRAG_HANDLE_CLASSNAME);
+        } else {
+            contentElement.addClassName(DRAG_HANDLE_CLASSNAME);
+        }*/
     }
 
     protected native final void updateWidgetWrapper(Element element, int x, int y, int width, int height)
@@ -327,4 +357,13 @@ public class GwtGridStack extends ComplexPanel {
     public boolean isClickOk() {
         return !draggedOrResized && new Date().getTime() > (lastEvent + DISABLE_CLICK_AFTER_EVENT_MS);
     }
+
+    protected native final void nativeSetGridStatic(boolean gridStatic)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.set_static(gridStatic);
+        });
+    }-*/;
 }

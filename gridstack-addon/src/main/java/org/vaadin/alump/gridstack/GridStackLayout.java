@@ -131,6 +131,17 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     /**
+     * Add component to layout
+     * @param component Component added
+     * @param useDragHandle true to add component with a separate drag handle, or false to make whole content act as a
+     *                      drag handle. Notice that using a separate drag handle is recommended if you component
+     *                      is or contains any active components (buttons etc..)
+     */
+    public void addComponent(Component component, boolean useDragHandle) {
+        addComponent(component, -1, -1, useDragHandle);
+    }
+
+    /**
      * Add component to given slot
      * @param component Component added
      * @param x Slot's X coordinate
@@ -138,6 +149,19 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     public void addComponent(Component component, int x, int y) {
         addComponent(component, x, y, 1, 1);
+    }
+
+    /**
+     * Add component to given slot
+     * @param component Component added
+     * @param x Slot's X coordinate
+     * @param y Slot's Y coordinate
+     * @param useDragHandle true to add component with a separate drag handle, or false to make whole content act as a
+     *                      drag handle. Notice that using a separate drag handle is recommended if you component
+     *                      is or contains any active components (buttons etc..)
+     */
+    public void addComponent(Component component, int x, int y, boolean useDragHandle) {
+        addComponent(component, x, y, 1, 1, useDragHandle);
     }
 
     /**
@@ -149,6 +173,21 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param height Height of space reserved (in slots)
      */
     public void addComponent(Component component, int x, int y, int width, int height) {
+        addComponent(component, x, y, width, height, true);
+    }
+
+    /**
+     * Add component to given slot, and define it's size
+     * @param component Component added
+     * @param x Slot's X coordinate (use negative values if position can be defined on client side)
+     * @param y Slot's Y coordinate (use negative values if position can be defined on client side)
+     * @param width Width of space reserved (in slots)
+     * @param height Height of space reserved (in slots)
+     * @param useDragHandle true to add component with a separate drag handle, or false to make whole content act as a
+     *                      drag handle. Notice that using a separate drag handle is recommended if you component
+     *                      is or contains any active components (buttons etc..)
+     */
+    public void addComponent(Component component, int x, int y, int width, int height, boolean useDragHandle) {
         super.addComponent(component);
         components.add(component);
 
@@ -157,6 +196,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         info.y = y;
         info.width = width;
         info.height = height;
+        info.useDragHandle = useDragHandle;
         getState().childOptions.put(component, info);
     }
 
@@ -361,5 +401,32 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
             throw new IllegalStateException("Missing child options");
         }
         return opt;
+    }
+
+    /**
+     * Set layout static (no dragging of resizing) or dynamic (dragging and resizing allowed)
+     * @param staticGrid true to set static (no dragging of resizing), false to set dynamic (dragging and resizing
+     *                   allowed)
+     */
+    public void setStaticGrid(boolean staticGrid) {
+        getState(true).gridStackOptions.staticGrid = staticGrid;
+    }
+
+    /**
+     * Check if layout is in static mode
+     * @return true if in static mode, false if not, null if not defined by server side
+     */
+    public Boolean isStaticGrid() {
+        return getState(false).gridStackOptions.staticGrid;
+    }
+
+
+    /**
+     * Check if component has specific dragging handle
+     * @param child Child component of layout
+     * @return true if component has separate dragging handle, false if whole content acts as dragging handle
+     */
+    public boolean isComponentWithDragHandle(Component child) {
+        return getComponentOptions(child, false).useDragHandle;
     }
 }
