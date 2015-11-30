@@ -353,7 +353,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     protected GridStackChildOptions getComponentOptions(Component child, boolean modify, boolean throwIfMissing) {
-        if(child.getParent() != this) {
+        if(child == null || child.getParent() != this) {
             throw new IllegalArgumentException("Given component is not child of this layout");
         }
         GridStackChildOptions opt = getState(modify).childOptions.get(child);

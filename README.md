@@ -40,8 +40,9 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
-### Version 0.1.1 (2015-??)
-- TBD
+### Version 0.1.1 (2015-xx-xx)
+- Fixing issue #3 "Removing and subsequently adding Components"
+- Clearning unneeded error debug prints on client side
 
 ### Version 0.1.0 (2015-11-09)
 - Initial release. Not all features supported yet, but should allow basic usage

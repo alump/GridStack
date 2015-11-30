@@ -25,8 +25,10 @@ import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class GwtGridStack extends ComplexPanel {
@@ -150,20 +152,27 @@ public class GwtGridStack extends ComplexPanel {
     }
 
     protected void onGridStackChange(Event event, GwtGridStackChangedItem[] items) {
-        Widget widgets[] = new Widget[items.length];
+        // This gets called sometimes with undefined items, not sure why, but ignoring it for now.
+        if(items == null) {
+            return;
+        }
+
+        List<Widget> widgets = new ArrayList<Widget>();
 
         for(int i = 0; i < items.length; ++i) {
             GwtGridStackChangedItem item = items[i];
             Widget child = mapElementToWidget(item.getElement());
             if(child == null) {
-                LOGGER.severe("Could not map changed event to child");
-                return;
+                // Null children in list can be ignored?
+                continue;
             } else if(moveHandler != null) {
-                widgets[i] = child;
+                widgets.add(child);
             }
         }
 
-        moveHandler.onWidgetsMoved(widgets, items);
+        if(!widgets.isEmpty()) {
+            moveHandler.onWidgetsMoved(widgets.toArray(new Widget[widgets.size()]), items);
+        }
     }
 
     protected void onGridStackDragStart(Event event) {
