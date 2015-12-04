@@ -5,7 +5,7 @@
 	<groupId>org.vaadin.alump.gridstack</groupId>
 	<artifactId>gridstack-demo</artifactId>
 	<packaging>war</packaging>
-	<version>0.2.0</version>
+	<version>0.2.1-SNAPSHOT</version>
 	<name>GridStack Add-on Demo</name>
 
 	<properties>
@@ -179,6 +179,7 @@
 						<goals>
 							<goal>resources</goal>
 							<goal>update-widgetset</goal>
+							<goal>update-theme</goal>
 							<goal>compile-theme</goal>
 							<goal>compile</goal>
 						</goals>
