@@ -293,8 +293,8 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     /**
-     * Get access gridstack.js options, for now these can be only modified before layout has been rendered on client
-     * side. This API will be removed as soon as cleaner API is ready.
+     * This call is deprecated and will be removed in 0.3.0. Please use setVerticalMargin, setCellHeight, setMinWidth
+     * and setStaticGrid methods.
      * @return Access to gridstack.js's grid options
      */
     @Deprecated
@@ -407,9 +407,11 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * Set layout static (no dragging of resizing) or dynamic (dragging and resizing allowed)
      * @param staticGrid true to set static (no dragging of resizing), false to set dynamic (dragging and resizing
      *                   allowed)
+     * @return This GridStackLayout for command chaining
      */
-    public void setStaticGrid(boolean staticGrid) {
+    public GridStackLayout setStaticGrid(boolean staticGrid) {
         getState(true).gridStackOptions.staticGrid = staticGrid;
+        return this;
     }
 
     /**
@@ -429,4 +431,63 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     public boolean isComponentWithDragHandle(Component child) {
         return getComponentOptions(child, false).useDragHandle;
     }
+
+    /**
+     * Define vertical margin between components on GridStack layout. Value is only read when rendered on client side
+     * first time, so changing value after that will not have any effect (unless client side is detached).
+     * @param marginPx Vertical margin in pixels
+     * @return This GridStackLayout for command chaining
+     */
+    public GridStackLayout setVerticalMargin(int marginPx) {
+        getState(true).gridStackOptions.verticalMargin = marginPx;
+        return this;
+    }
+
+    /**
+     * Get vertical margin between components. Value might be mismatch to actual value used, if changed after client
+     * side was last attached.
+     * @return Vertical margin in pixels, if null the gridstack.js default is used.
+     */
+    public Integer getVerticalMargin() {
+        return getState(false).gridStackOptions.verticalMargin;
+    }
+
+    /**
+     * Define height of cell in pixels.
+     * @param heightPx Cell height in pixels
+     * @return This GridStackLayout for command chaining
+     */
+    public GridStackLayout setCellHeight(int heightPx) {
+        getState(true).gridStackOptions.cellHeight = heightPx;
+        return this;
+    }
+
+    /**
+     * Get height of cell in pixels.
+     * @return Cell height in pixels, if null the gridstack.js default is used.
+     */
+    public Integer getCellHeight() {
+        return getState(false).gridStackOptions.cellHeight;
+    }
+
+    /**
+     * Set minimal width. If window width is less, grid will be shown in one-column mode. Changing value after
+     * it has been attached on client side will not apply until client side is detached and attached.
+     * @param minWidthPx Minimal width in pixels
+     * @return This GridStackLayout for command chaining
+     */
+    public GridStackLayout setMinWidth(int minWidthPx) {
+        getState(true).gridStackOptions.minWidth = minWidthPx;
+        return this;
+    }
+
+    /**
+     * Get minimal width. If window width is less, grid will be shown in one-column mode. Value might be mismatch to
+     * actual value used, if changed after client side was last attached.
+     * @return Minimal width in pixels, if null the gridstack.js default is used.
+     */
+    public Integer getMinWidth() {
+        return getState(false).gridStackOptions.minWidth;
+    }
+
 }

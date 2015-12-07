@@ -39,13 +39,16 @@ public class DemoUI extends UI
     @Override
     protected void init(VaadinRequest request) {
 
-        // By default gridstack has three columns
-        gridStack = new GridStackLayout(8);
+        // By default gridstack has three columns (and calls that only work before client side attachment)
+        gridStack = new GridStackLayout(8)
+                .setVerticalMargin(12)
+                .setMinWidth(300);
+
         // See styles.scss of this demo project how to handle columns sizes on CSS size
         gridStack.addStyleName("eight-column-grid-stack");
-        gridStack.getOptions().minWidth = 300;
-        gridStack.getOptions().verticalMargin = 12;
-        gridStack.getOptions().cellHeight = 80;
+
+        // One cell height is set to 80 pixels
+        gridStack.setCellHeight(80);
 
         // Show it in the middle of the screen
         final VerticalLayout layout = new VerticalLayout();

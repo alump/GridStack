@@ -70,6 +70,9 @@ public class GwtGridStack extends ComplexPanel {
         if(!initialized) {
             initialize(width, height, GwtGridStackOptions.createFrom(options));
         } else {
+            if(options.cellHeight != null) {
+                nativeSetCellHeight(options.cellHeight.intValue());
+            }
             if(options.staticGrid != null) {
                 nativeSetGridStatic(options.staticGrid.booleanValue());
             }
@@ -364,6 +367,15 @@ public class GwtGridStack extends ComplexPanel {
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
             grid.set_static(gridStatic);
+        });
+    }-*/;
+
+    protected native final void nativeSetCellHeight(int cellHeight)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.cell_height(cellHeight);
         });
     }-*/;
 }
