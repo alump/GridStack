@@ -87,6 +87,7 @@ public class DemoUI extends UI
 
         Component image = createImage();
         gridStack.addComponent(image, 2, 1, 3, 2);
+        gridStack.setWrapperScrolling(image, false);
         gridStack.setComponentSizeLimits(image, 3, null, 2, null);
 
         gridStack.addGridStackMoveListener(events -> {
@@ -188,6 +189,7 @@ public class DemoUI extends UI
         layout.setSizeFull();
         eventConsole.setCaption("Event console");
         eventConsole.setSizeFull();
+        eventConsole.setValue("Events will be written here.");
         layout.addComponent(eventConsole);
         return layout;
     }

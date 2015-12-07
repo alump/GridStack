@@ -490,4 +490,24 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         return getState(false).gridStackOptions.minWidth;
     }
 
+    /**
+     * Define if wrapper around child should allow vertical scrolling or not
+     * @param child Child of layout
+     * @param scrolling true to enable vertical scrolling, false to disable it
+     * @throws IllegalArgumentException If child not found
+     */
+    public void setWrapperScrolling(Component child, boolean scrolling) {
+        getComponentOptions(child, true).disableScrolling = !scrolling;
+    }
+
+    /**
+     * Check if wrapper around child allows vertical scrolling or not
+     * @param child Child of layout
+     * @return true if wrapper allows vertical scrolling, false if wrapper hides vertical overflow
+     * @throws IllegalArgumentException If child not found
+     */
+    public boolean isWrapperScrolling(Component child) {
+        return getComponentOptions(child, false).disableScrolling;
+    }
+
 }

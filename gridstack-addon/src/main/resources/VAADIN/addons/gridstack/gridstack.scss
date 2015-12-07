@@ -63,6 +63,10 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
         overflow-y: auto;
       }
 
+      &.disable-scrolling > .grid-stack-item-content {
+        overflow-y: hidden;
+      }
+
       > .ui-resizable-handle {
         position: absolute;
         font-size: 0.1px;

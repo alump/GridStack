@@ -36,4 +36,5 @@ public class GridStackChildOptions implements Serializable {
 
     public boolean useDragHandle = false;
     public String styleName = null;
+    public boolean disableScrolling = false;
 }

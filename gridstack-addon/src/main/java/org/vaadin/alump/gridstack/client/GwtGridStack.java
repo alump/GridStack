@@ -19,6 +19,7 @@ package org.vaadin.alump.gridstack.client;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -49,6 +50,7 @@ public class GwtGridStack extends ComplexPanel {
 
     public final static String CONTENT_CLASSNAME = "grid-stack-item-content";
     public final static String DRAG_HANDLE_CLASSNAME = GridStackOptions.DRAG_HANDLE_CLASSNAME;
+    public final static String DISABLE_SCROLLING_CLASSNAME = "disable-scrolling";
 
     public interface GwtGridStackMoveHandler {
         void onWidgetsMoved(Widget[] widgets, GwtGridStackChangedItem[] data);
@@ -155,6 +157,10 @@ public class GwtGridStack extends ComplexPanel {
 
         if(!info.useDragHandle) {
             content.addClassName(DRAG_HANDLE_CLASSNAME);
+        }
+
+        if(info.disableScrolling) {
+            wrapper.addClassName(DISABLE_SCROLLING_CLASSNAME);
         }
 
         wrapper.appendChild(content);
@@ -287,13 +293,11 @@ public class GwtGridStack extends ComplexPanel {
         updateWidgetSizeLimits(wrapper, GwtGridSizeLimits.create(options));
         setLocked(wrapper, options.locked);
 
-        /* Make sure draghandle style name is at right place
-        Element contentElement = wrapper.getFirstChildElement();
-        if(options.useDragHandle) {
-            contentElement.removeClassName(DRAG_HANDLE_CLASSNAME);
+        if(options.disableScrolling) {
+            wrapper.addClassName(DISABLE_SCROLLING_CLASSNAME);
         } else {
-            contentElement.addClassName(DRAG_HANDLE_CLASSNAME);
-        }*/
+            wrapper.removeClassName(DISABLE_SCROLLING_CLASSNAME);
+        }
     }
 
     protected native final void updateWidgetWrapper(Element element, int x, int y, int width, int height)
