@@ -10,6 +10,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.ui.themes.ValoTheme;
+import org.vaadin.alump.gridstack.GridStackButton;
 import org.vaadin.alump.gridstack.GridStackLayout;
 
 import java.time.Instant;
@@ -82,7 +83,7 @@ public class DemoUI extends UI
         gridStack.addComponent(locked, 1, 0, 3, 1);
         gridStack.setComponentLocked(locked, true);
 
-        gridStack.addComponent(createForm(), 0, 5, 2, 3);
+        gridStack.addComponent(createForm(), 0, 5, 2, 3, false);
         gridStack.addComponent(createConsole(), 0, 3, 4, 2);
 
         Component image = createImage();
@@ -176,7 +177,7 @@ public class DemoUI extends UI
         password.addStyleName(ValoTheme.TEXTFIELD_SMALL);
         password.setCaption("Password:");
         layout.addComponent(password);
-        Button login = new Button("Login", e-> Notification.show("Logged in?"));
+        Button login = new GridStackButton("Login", e-> Notification.show("Logged in?"));
         login.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(login);
         layout.setComponentAlignment(login, Alignment.BOTTOM_RIGHT);
