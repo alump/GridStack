@@ -1,5 +1,6 @@
 package org.vaadin.alump.gridstack.demo;
 
+import com.ibm.icu.impl.CalendarAstronomer;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
@@ -181,6 +182,10 @@ public class DemoUI extends UI
         login.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(login);
         layout.setComponentAlignment(login, Alignment.BOTTOM_RIGHT);
+        Label info = new Label("Also this child can be dragged without handle. GridStackButton used to resolve event "
+                + "issues caused by normal Button.");
+        info.addStyleName("info-text");
+        layout.addComponent(info);
         return layout;
     }
 

@@ -27,10 +27,8 @@ public class GwtGridStackButton extends VButton {
 
     @Override
     public void onBrowserEvent(Event event) {
-        if(!isEnabled()) {
-            super.onBrowserEvent(event);
-        } else {
-            super.onBrowserEvent(event);
+        super.onBrowserEvent(event);
+        if(isEnabled()) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                 if (event.getButton() == Event.BUTTON_LEFT) {
                     event.stopPropagation();

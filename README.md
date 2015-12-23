@@ -60,7 +60,7 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
-### Version 0.2.1 (201x-xx-xx)
+### Version 0.2.1 (2015-12-23)
 - Add missing API to define cell height, min width and vertical margins
 - API to set wrappers un-scrollable
 - GridStackButton component added if you want to use Button without separate draghandle
