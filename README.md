@@ -34,10 +34,9 @@ Then in scss of your theme, add rule:
 
 After this you should have all 12 columns sized correctly to take 8.333...% of width.
 
-### Using Button (or other active component) without dragging handle
-Currently Vaadin components and gridstack.js do not behave well if both fight over same events. For this reason since
-0.2.0 default behavior has been to use separate dragging handle. You can still use handle free dragging on components
-that are not or do not contain active components.
+### Using separate dragging handle
+You can define if dragging is done from separate dragging handle or from the whole component. Using the whole child
+component as dragging handle can have issues with some components (eg. Buttons).
 
 ```java
 // Adding component with dragging handle (default behavior)
@@ -45,6 +44,14 @@ gridstack.addComponent(myLayout);
 
 // Adding component without dragging handle (content acts as dragging handle)
 gridstack.addComponent(myLabel, false);
+```
+
+### Using Button without separate dragging handle
+Replace your Buttons with GridStackButtons. This modifies client side implementation to prevent dragging issues.
+ 
+```java
+Button button = new GridStackButton("My Button");
+//... continue using as normal button ... 
 ```
 
 ## Download release

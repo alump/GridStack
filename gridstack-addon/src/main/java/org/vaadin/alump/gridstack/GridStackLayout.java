@@ -125,6 +125,9 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         return (GridStackLayoutState)super.getState(markDirty);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addComponent(Component component) {
         addComponent(component, -1, -1);
@@ -233,6 +236,9 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeComponent(Component component) {
         getState().childOptions.remove(component);
@@ -257,16 +263,25 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         addComponent(newComponent, oldOptions.x, oldOptions.y, oldOptions.width, oldOptions.height);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getComponentCount() {
         return components.size();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterator<Component> iterator() {
         return components.iterator();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addLayoutClickListener(LayoutEvents.LayoutClickListener listener) {
         addListener(EventId.LAYOUT_CLICK_EVENT_IDENTIFIER,
@@ -280,6 +295,9 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         addLayoutClickListener(layoutClickListener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeLayoutClickListener(LayoutEvents.LayoutClickListener listener) {
         removeListener(EventId.LAYOUT_CLICK_EVENT_IDENTIFIER,
