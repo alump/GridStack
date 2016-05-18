@@ -30,11 +30,14 @@ import com.vaadin.client.ui.LayoutClickEventHandler;
 import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.LayoutClickRpc;
+import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
 import org.vaadin.alump.gridstack.client.shared.GridStackMoveData;
 import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
 import org.vaadin.alump.gridstack.client.shared.GridStackLayoutState;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,6 +45,8 @@ import java.util.logging.Logger;
 public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
     private transient final static Logger LOGGER = Logger.getLogger(GridStackLayoutConnector.class.getName());
+
+    private final static int CONVERT_NEGATIVE_IN_COMPARE = 10000;
 
     @Override
     public void init() {
@@ -97,6 +102,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
         if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {
             getWidget().batchUpdate();
+            //for(Connector connector : getChildConnectorsInCoordinateOrder()) {
             for(Connector connector : getState().childOptions.keySet()) {
                 Widget widget = ((ComponentConnector)connector).getWidget();
                 getWidget().updateChild(widget, getState().childOptions.get(connector));
@@ -104,6 +110,55 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
             getWidget().commit();
         }
 	}
+
+    /* Uncomment this if connectors have to updated in coordinate order
+    private List<Connector> getChildConnectorsInCoordinateOrder() {
+        List<Connector> list = new ArrayList<Connector>();
+        for(Connector connector : getState().childOptions.keySet()) {
+            list.add(connector);
+        }
+
+        Collections.sort(list, childConnectorComparator);
+
+        return list;
+    }
+
+    private transient final Comparator<Connector> childConnectorComparator = new Comparator<Connector>() {
+        @Override
+        public int compare(Connector a, Connector b) {
+            GridStackChildOptions aOptions = getState().childOptions.get(a);
+            GridStackChildOptions bOptions = getState().childOptions.get(b);
+
+            int aY = aOptions.y;
+            if(aY < 0) {
+                aY = CONVERT_NEGATIVE_IN_COMPARE;
+            }
+
+            int bY = bOptions.y;
+            if(bY < 0) {
+                bY = CONVERT_NEGATIVE_IN_COMPARE;
+            }
+
+            int comp = Integer.compare(aY, bY);
+            if(comp == 0) {
+
+                int aX = aOptions.x;
+                if(aX < 0) {
+                    aX = CONVERT_NEGATIVE_IN_COMPARE;
+                }
+
+                int bX = bOptions.x;
+                if(bX < 0) {
+                    bX = CONVERT_NEGATIVE_IN_COMPARE;
+                }
+
+                comp = Integer.compare(aX, bX);
+            }
+
+            return comp;
+        }
+    };
+    */
 
     @Override
     public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {

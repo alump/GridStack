@@ -60,6 +60,9 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
+### Version 0.3.1 (TBD)
+- TBD
+
 ### Version 0.3.0 (2016-05-18)
 - Possibility to move and resize already added children
 - Adds animate option to allow nice transitions when moving children
