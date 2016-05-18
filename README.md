@@ -60,6 +60,13 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
+### Version 0.3.0 (2016-05-18)
+- Possibility to move and resize already added children
+- Adds animate option to allow nice transitions when moving children
+- gridstack.js updated to 0.2.5
+- Deprecated API removed
+- Fix error in getComponent method with coordinates (could have returned wrong components)
+
 ### Version 0.2.1 (2015-12-23)
 - Add missing API to define cell height, min width and vertical margins
 - API to set wrappers un-scrollable

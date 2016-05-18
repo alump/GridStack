@@ -33,6 +33,10 @@ public class GridStackCoordinates {
         this.height = height;
     }
 
+    public boolean isXAndY(int x, int y) {
+        return this.x == x && this.y == y;
+    }
+
     public int getX() {
         return x;
     }

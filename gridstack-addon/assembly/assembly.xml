@@ -20,6 +20,8 @@
 			<directory>..</directory>
 			<includes>
 				<include>LICENSE.txt</include>
+				<include>GRIDSTACK_LICENSE.txt</include>
+				<include>LODASH_LICENSE.txt</include>
 				<include>README.md</include>
 			</includes>
 		</fileSet>

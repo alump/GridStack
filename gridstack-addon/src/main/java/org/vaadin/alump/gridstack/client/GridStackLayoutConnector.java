@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 @Connect(org.vaadin.alump.gridstack.GridStackLayout.class)
 public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
-    private final static Logger LOGGER = Logger.getLogger(GridStackLayoutConnector.class.getName());
+    private transient final static Logger LOGGER = Logger.getLogger(GridStackLayoutConnector.class.getName());
 
     @Override
     public void init() {
@@ -129,7 +129,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         //ignore for now
     }
 
-    private final LayoutClickEventHandler clickEventHandler = new LayoutClickEventHandler(this) {
+    private transient final LayoutClickEventHandler clickEventHandler = new LayoutClickEventHandler(this) {
 
         @Override
         protected ComponentConnector getChildComponent(Element element) {

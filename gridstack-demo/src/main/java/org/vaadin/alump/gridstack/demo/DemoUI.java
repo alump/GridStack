@@ -12,11 +12,11 @@ import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackButton;
+import org.vaadin.alump.gridstack.GridStackCoordinates;
 import org.vaadin.alump.gridstack.GridStackLayout;
 
 import java.time.Instant;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Theme("demo")
@@ -32,6 +32,11 @@ public class DemoUI extends UI
 
     private Random rand = new Random(0xDEADBEEF);
 
+    private Component locked;
+
+    // This value can be used as x and y when client side can pick the best slot
+    private final static int CLIENT_SELECTS = GridStackLayout.CLIENT_SIDE_SELECTS;
+
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = DemoUI.class,
             widgetset = "org.vaadin.alump.gridstack.demo.DemoWidgetSet")
@@ -44,7 +49,8 @@ public class DemoUI extends UI
         // By default gridstack has three columns (and calls that only work before client side attachment)
         gridStack = new GridStackLayout(8)
                 .setVerticalMargin(12)
-                .setMinWidth(300);
+                .setMinWidth(300)
+                .setAnimate(true);
 
         // See styles.scss of this demo project how to handle columns sizes on CSS size
         gridStack.addStyleName("eight-column-grid-stack");
@@ -80,9 +86,8 @@ public class DemoUI extends UI
         gridStack.addComponent(new Label("This child can be dragged without handle. Please use separate handle "
             + "(default mode) when you child component is, or has, an active Vaadin component."), 0, 0, 1, 3, false);
 
-        Component locked = new Label("This is \"locked\" (moving other children will not move this)");
+        locked = new Label("This component can be \"locked\" (moving other children will not move this)");
         gridStack.addComponent(locked, 1, 0, 3, 1);
-        gridStack.setComponentLocked(locked, true);
 
         gridStack.addComponent(createForm(), 0, 5, 2, 3, false);
         gridStack.addComponent(createConsole(), 0, 3, 4, 2);
@@ -107,7 +112,7 @@ public class DemoUI extends UI
 
         toolbar.addComponent(new Label("GridStack Demo"));
 
-        toolbar.addComponent(createButton(FontAwesome.PLUS, e -> {
+        toolbar.addComponent(createButton(FontAwesome.PLUS, "Add component", e -> {
             int index = gridStack.getComponentCount();
             final CssLayout layout = new CssLayout();
             layout.addStyleName("hep-layout");
@@ -118,10 +123,10 @@ public class DemoUI extends UI
             button.addStyleName(ValoTheme.BUTTON_SMALL);
             button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
             layout.addComponent(button);
-            gridStack.addComponent(layout, -1, -1, 1 + rand.nextInt(3), 1);
+            gridStack.addComponent(layout, CLIENT_SELECTS, CLIENT_SELECTS, 1 + rand.nextInt(3), 1);
         }));
 
-        toolbar.addComponent(createButton(FontAwesome.MINUS, e -> {
+        toolbar.addComponent(createButton(FontAwesome.MINUS, "Remove component", e -> {
             int index = rand.nextInt(gridStack.getComponentCount());
             Iterator<Component> iter = gridStack.iterator();
             for(int i = 0; i < index; ++i) {
@@ -141,12 +146,24 @@ public class DemoUI extends UI
         });
         toolbar.addComponent(layoutClicks);
 
+        toolbar.addComponent(createButton(FontAwesome.ARROWS, "Move random child to new location",
+                e -> moveRandomChildToAnotherFreePosition()));
+
+        toolbar.addComponent(createButton(FontAwesome.RANDOM, "Reorder all items to new order", e -> reorderAll()));
+
         CheckBox staticGrid = new CheckBox("Static");
-        staticGrid.setDescription("If static, dragging and resizing are not allowed");
+        staticGrid.setDescription("If static, dragging and resizing are not allowed by user");
         staticGrid.addValueChangeListener(e -> {
             gridStack.setStaticGrid((Boolean)e.getProperty().getValue());
         });
         toolbar.addComponent(staticGrid);
+
+        CheckBox lockItem = new CheckBox("Lock child");
+        lockItem.setDescription("Define if item with text \"can be locked\" is locked or not");
+        lockItem.addValueChangeListener(e -> {
+            gridStack.setComponentLocked(locked, (Boolean)e.getProperty().getValue());
+        });
+        toolbar.addComponent(lockItem);
 
         return toolbar;
     }
@@ -155,12 +172,28 @@ public class DemoUI extends UI
         eventConsole.setValue(message + "\r\n" + eventConsole.getValue());
     }
 
-    private Button createButton(Resource icon, Button.ClickListener listener) {
+    private Button createButton(Resource icon, String caption, String description, Button.ClickListener listener) {
         Button button = new Button();
         button.addStyleName(ValoTheme.BUTTON_SMALL);
         button.addClickListener(listener);
-        button.setIcon(icon);
+        if(icon != null) {
+            button.setIcon(icon);
+        }
+        if(caption != null) {
+            button.setCaption(caption);
+        }
+        if(description != null) {
+            button.setDescription(description);
+        }
         return button;
+    }
+
+    private Button createButton(Resource icon, String description, Button.ClickListener listener) {
+        return createButton(icon, null, description, listener);
+    }
+
+    private Button createButton(String caption, String description, Button.ClickListener listener) {
+        return createButton(null, caption, description, listener);
     }
 
     private Component createForm() {
@@ -227,5 +260,56 @@ public class DemoUI extends UI
 
         addEvent(sb.toString());
     };
+
+    private void reorderAll() {
+        addEvent("Reorder all components...");
+
+        List<Component> children = new ArrayList<>();
+        gridStack.iterator().forEachRemaining(child -> {
+            //Move away temporary
+            gridStack.moveComponent(child, 100, 100);
+            children.add(child);
+        });
+
+        Collections.shuffle(children, rand);
+        children.forEach(child -> moveChildToAnotherFreePosition(child));
+    }
+
+    private void moveRandomChildToAnotherFreePosition() {
+        List<Component> children = new ArrayList<>();
+        gridStack.iterator().forEachRemaining(child -> children.add(child));
+        if(!children.isEmpty()) {
+            addEvent("Move random child to new position...");
+            Collections.shuffle(children, rand);
+            moveChildToAnotherFreePosition(children.get(0));
+        }
+    }
+
+    // Just ugly hack to find suitable slot on server side. This will onlu work if server side has actual location of
+    // child component
+    private void moveChildToAnotherFreePosition(Component child) {
+        GridStackCoordinates oldCoords = gridStack.getCoordinates(child);
+        int width = oldCoords.getWidth();
+        int height = oldCoords.getHeight();
+
+        final int columnsTested = 8;
+        final int rowsTested = 8;
+        for(int slotIndex = 0; slotIndex < columnsTested * rowsTested; ++slotIndex) {
+            int x = slotIndex % columnsTested;
+            int y = slotIndex / columnsTested;
+
+            if(oldCoords.isXAndY(x, y)) {
+                continue;
+            }
+
+            if(gridStack.isAreaEmpty(x, y, width, height)) {
+                addEvent("Moving child server side to new position x:" + x + " y:" + y + "...");
+                gridStack.moveComponent(child, x, y);
+                return;
+            }
+        }
+
+        addEvent("!!! Failed to find new available position for child");
+    }
 
 }

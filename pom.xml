@@ -5,7 +5,7 @@
 	<groupId>org.vaadin.alump</groupId>
 	<artifactId>gridstack</artifactId>
 	<packaging>pom</packaging>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>GridStack Add-on Root Project</name>
 
 	<modules>

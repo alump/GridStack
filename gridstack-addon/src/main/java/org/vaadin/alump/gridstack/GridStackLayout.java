@@ -45,6 +45,11 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
 
     private final List<GridStackMoveEvent.GridStackMoveListener> moveListeners = new ArrayList<GridStackMoveEvent.GridStackMoveListener>();
 
+    /**
+     * Use this as x or y coordinate if you want to leave slot selection of component to client side
+     */
+    public final static int CLIENT_SIDE_SELECTS = -1;
+
     private GridStackServerRpc serverRpc = new GridStackServerRpc() {
 
         @Override
@@ -130,7 +135,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     @Override
     public void addComponent(Component component) {
-        addComponent(component, -1, -1);
+        addComponent(component, CLIENT_SIDE_SELECTS, CLIENT_SIDE_SELECTS);
     }
 
     /**
@@ -141,7 +146,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      *                      is or contains any active components (buttons etc..)
      */
     public void addComponent(Component component, boolean useDragHandle) {
-        addComponent(component, -1, -1, useDragHandle);
+        addComponent(component, CLIENT_SIDE_SELECTS, CLIENT_SIDE_SELECTS, useDragHandle);
     }
 
     /**
@@ -204,6 +209,66 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     /**
+     * Reset component's position and allow child side define new position for it.
+     * @param component Child component which position is reset
+     */
+    public void resetComponentPosition(Component component) {
+        moveComponent(component, CLIENT_SIDE_SELECTS, CLIENT_SIDE_SELECTS);
+    }
+
+    /**
+     * Move given child component
+     * @param component Child component moved and/or resized
+     * @param x When defined component's X value is updated, if null old value is kept
+     * @param y When defined component's Y value is updated, if null old value is kept
+     * @throws IllegalArgumentException If given value are invalid (eg. component is not child of this layout)
+     */
+    public void moveComponent(Component component, Integer x, Integer y) throws IllegalArgumentException {
+        moveAndResizeComponent(component, x, y, null, null);
+    }
+
+    /**
+     * Move given child component
+     * @param component Child component moved and/or resized
+     * @param width When defined component's width is updated, if null old value is kept
+     * @param height When defined component's height is updated, if null old value is kept
+     * @throws IllegalArgumentException If given value are invalid (eg. component is not child of this layout)
+     */
+    public void resizeComponent(Component component, Integer width, Integer height) throws IllegalArgumentException {
+        moveAndResizeComponent(component, null, null, width, height);
+    }
+
+    /**
+     * Move and/or resize given child component
+     * @param component Child component moved and/or resized
+     * @param x When defined component's X value is updated, if null old value is kept
+     * @param y When defined component's Y value is updated, if null old value is kept
+     * @param width When defined component's width is updated, if null old value is kept
+     * @param height When defined component's height is updated, if null old value is kept
+     * @throws IllegalArgumentException If given value are invalid (eg. component is not child of this layout)
+     */
+    public void moveAndResizeComponent(Component component, Integer x, Integer y, Integer width, Integer height)
+            throws IllegalArgumentException {
+
+        GridStackChildOptions info = getState().childOptions.get(component);
+        if(info == null) {
+            throw new IllegalArgumentException("Given component is not child of GridStackLayout");
+        }
+        if(x != null) {
+            info.x = x;
+        }
+        if(y != null) {
+            info.y = y;
+        }
+        if(width != null) {
+            info.width = width;
+        }
+        if(height != null) {
+            info.height = height;
+        }
+    }
+
+    /**
      * Get component with given slot coordinate
      * @param x Slot's X coordinate
      * @param y Slot's Y coordinate
@@ -224,7 +289,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         for(Connector connector : getState().childOptions.keySet()) {
             GridStackChildOptions info = getState().childOptions.get(connector);
             if(acceptInsideHit) {
-                if(x >= info.x && y < (info.x + info.width) && y >= info.y && y < (info.y + info.width)) {
+                if(x >= info.x && x < (info.x + info.width) && y >= info.y && y < (info.y + info.width)) {
                     return (Component) connector;
                 }
             } else {
@@ -308,19 +373,6 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     @Deprecated
     public void removeListener(LayoutEvents.LayoutClickListener layoutClickListener) {
         removeLayoutClickListener(layoutClickListener);
-    }
-
-    /**
-     * This call is deprecated and will be removed in 0.3.0. Please use setVerticalMargin, setCellHeight, setMinWidth
-     * and setStaticGrid methods.
-     * @return Access to gridstack.js's grid options
-     */
-    @Deprecated
-    public GridStackOptions getOptions() {
-        if(initialClientResponseSent) {
-            throw new IllegalStateException("Options can not be modified after initial response has been sent to client");
-        }
-        return getState().gridStackOptions;
     }
 
     /**
@@ -422,13 +474,31 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     /**
+     * Define if layout is animated when child components are moved
+     * @param animate true to animate, false to not animate
+     * @return This GridStackLayout for command chaining
+     */
+    public GridStackLayout setAnimate(boolean animate) {
+        getState().gridStackOptions.animate = animate;
+        return this;
+    }
+
+    /**
+     * Check if layout is animated
+     * @return true if animated, false if not
+     */
+    public boolean isAnimate() {
+        return getState(false).gridStackOptions.animate;
+    }
+
+    /**
      * Set layout static (no dragging of resizing) or dynamic (dragging and resizing allowed)
      * @param staticGrid true to set static (no dragging of resizing), false to set dynamic (dragging and resizing
      *                   allowed)
      * @return This GridStackLayout for command chaining
      */
     public GridStackLayout setStaticGrid(boolean staticGrid) {
-        getState(true).gridStackOptions.staticGrid = staticGrid;
+        getState().gridStackOptions.staticGrid = staticGrid;
         return this;
     }
 
@@ -526,6 +596,51 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     public boolean isWrapperScrolling(Component child) {
         return getComponentOptions(child, false).disableScrolling;
+    }
+
+    /**
+     * Check if given area is empty. Remember that any client side defined positioning not yet reported back to
+     * server side will be unknown and so can result work results.
+     * @param x Left edge coordinate of area
+     * @param x Top edge coordinate of area
+     * @param width Width of area in slots
+     * @param height Height of area in slots
+     * @throws IllegalArgumentException If invalid values given
+     */
+    public boolean isAreaEmpty(int x, int y, int width, int height) throws IllegalArgumentException {
+        return isAreaEmpty(new GridStackCoordinates(x, y, width, height));
+    }
+
+    /**
+     * Check if given area is empty. Remember that any client side defined positioning not yet reported back to
+     * server side will be unknown and so can result work results.
+     * @param coordinates Coordinate area checked (x, y, width, height)
+     * @throws IllegalArgumentException If invalid values given
+     */
+    public boolean isAreaEmpty(GridStackCoordinates coordinates) throws IllegalArgumentException {
+        if(coordinates.getX() < 0) {
+            throw new IllegalArgumentException("X can not be negative");
+        }
+        if(coordinates.getY() < 0) {
+            throw new IllegalArgumentException("Y can not be negative");
+        }
+        if(coordinates.getWidth() <= 0) {
+            throw new IllegalArgumentException("Width most be larger than zero");
+        }
+        if(coordinates.getHeight() <= 0) {
+            throw new IllegalArgumentException("Height most be larger than zero");
+        }
+
+        for(int dx = 0; dx < coordinates.getWidth(); ++dx) {
+            for(int dy = 0; dy < coordinates.getHeight(); ++dy) {
+                Component occupant = getComponent(coordinates.getX() + dx, coordinates.getY() + dy, true);
+                if(occupant != null) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 }
