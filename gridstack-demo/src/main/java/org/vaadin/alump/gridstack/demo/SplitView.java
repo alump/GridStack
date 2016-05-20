@@ -46,7 +46,7 @@ public class SplitView extends HorizontalSplitPanel implements View {
     }
 
     private Component createRightSide() {
-        gridStack = new GridStackLayout().setCellHeight(50).setAnimate(true);
+        gridStack = new GridStackLayout(1).setCellHeight(50).setAnimate(true);
         gridStack.setSizeFull();
 
         for(int i = 0; i < 30; ++i) {
