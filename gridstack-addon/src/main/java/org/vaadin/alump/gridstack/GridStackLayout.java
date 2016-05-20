@@ -245,10 +245,15 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param y When defined component's Y value is updated, if null old value is kept
      * @param width When defined component's width is updated, if null old value is kept
      * @param height When defined component's height is updated, if null old value is kept
-     * @throws IllegalArgumentException If given value are invalid (eg. component is not child of this layout)
+     * @throws IllegalArgumentException If given value are invalid (eg. component is not child of this layout, or
+     * coordinates are invalid).
      */
     public void moveAndResizeComponent(Component component, Integer x, Integer y, Integer width, Integer height)
             throws IllegalArgumentException {
+
+        if(x != null & width != null && x >= 0 && x + width > getState(false).gridStackOptions.width) {
+            throw new IllegalArgumentException("Component would go outside the right edge of layout");
+        }
 
         GridStackChildOptions info = getState().childOptions.get(component);
         if(info == null) {
@@ -605,6 +610,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param x Top edge coordinate of area
      * @param width Width of area in slots
      * @param height Height of area in slots
+     * @return true if area is available and valid for use
      * @throws IllegalArgumentException If invalid values given
      */
     public boolean isAreaEmpty(int x, int y, int width, int height) throws IllegalArgumentException {
@@ -613,8 +619,10 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
 
     /**
      * Check if given area is empty. Remember that any client side defined positioning not yet reported back to
-     * server side will be unknown and so can result work results.
+     * server side will be unknown and so can result work results. Will also return false if area would go outside the
+     * right edge.
      * @param coordinates Coordinate area checked (x, y, width, height)
+     * @return true if area is available and valid for use
      * @throws IllegalArgumentException If invalid values given
      */
     public boolean isAreaEmpty(GridStackCoordinates coordinates) throws IllegalArgumentException {
@@ -629,6 +637,11 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         }
         if(coordinates.getHeight() <= 0) {
             throw new IllegalArgumentException("Height most be larger than zero");
+        }
+
+        // If item would drop out of left side, return false
+        if(coordinates.getX() + coordinates.getWidth() > getState(false).gridStackOptions.width) {
+            return false;
         }
 
         for(int dx = 0; dx < coordinates.getWidth(); ++dx) {
