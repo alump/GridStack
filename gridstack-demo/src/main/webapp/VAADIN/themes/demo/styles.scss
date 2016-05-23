@@ -91,4 +91,9 @@
   .info-text {
     font-size: 80%;
   }
+
+  .test-splitpanel > div > .v-splitpanel-second-container {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
 }

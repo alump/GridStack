@@ -23,6 +23,7 @@ public class SplitView extends HorizontalSplitPanel implements View {
 
     public SplitView() {
         setSizeFull();
+        addStyleName("test-splitpanel");
 
         setFirstComponent(createLeftSide());
         setSecondComponent(createRightSide());
