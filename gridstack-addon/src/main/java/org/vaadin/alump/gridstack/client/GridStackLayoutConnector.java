@@ -41,7 +41,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Connect(org.vaadin.alump.gridstack.GridStackLayout.class)
+@Connect(org.vaadin.alump.gridstack.GridStackLayoutNoJQuery.class)
 public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
     private transient final static Logger LOGGER = Logger.getLogger(GridStackLayoutConnector.class.getName());

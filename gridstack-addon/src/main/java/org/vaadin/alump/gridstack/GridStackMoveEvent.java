@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 public class GridStackMoveEvent {
 
-    private final GridStackLayout layout;
+    private final GridStackLayoutNoJQuery layout;
     private final Component movedChild;
     private final GridStackCoordinates oldCoordinates;
     private final GridStackCoordinates newCoordinates;
@@ -41,7 +41,7 @@ public class GridStackMoveEvent {
         void onGridStackMove(Collection<GridStackMoveEvent> events);
     }
 
-    public GridStackMoveEvent(GridStackLayout layout, Component movedChild, GridStackCoordinates oldCoordinates,
+    public GridStackMoveEvent(GridStackLayoutNoJQuery layout, Component movedChild, GridStackCoordinates oldCoordinates,
                               GridStackCoordinates newCoordinates) {
         this.layout = layout;
         this.movedChild = movedChild;
@@ -49,7 +49,7 @@ public class GridStackMoveEvent {
         this.oldCoordinates = oldCoordinates;
     }
 
-    public GridStackLayout getLayout() {
+    public GridStackLayoutNoJQuery getLayout() {
         return layout;
     }
 
