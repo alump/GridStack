@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Split view test related to issue #9
@@ -36,12 +37,21 @@ public class SplitView extends HorizontalSplitPanel implements View {
         layout.setSpacing(true);
         layout.setSizeFull();
 
-        Button reorder = new Button("Reorder", e -> {
+        Button shuffleButton = new Button("Shuffle", e -> {
             //moveRandomChildToAnotherFreePosition();
             GridStackDemoUtil.reorderAll(gridStack, rand, 1, 30);
         });
-        reorder.addStyleName(ValoTheme.BUTTON_SMALL);
-        layout.addComponent(reorder);
+        shuffleButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        layout.addComponent(shuffleButton);
+
+        Button resetButton = new Button("Reset", e -> {
+            AtomicInteger x = new AtomicInteger(0);
+            gridStack.iterator().forEachRemaining(child -> {
+                gridStack.moveComponent(child, 0, x.getAndAdd(gridStack.getCoordinates(child).getHeight()));
+            });
+        });
+        resetButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        layout.addComponent(resetButton);
 
         return layout;
     }
@@ -71,7 +81,7 @@ public class SplitView extends HorizontalSplitPanel implements View {
         }
     }
 
-    // Just ugly hack to find suitable slot on server side. This will onlu work if server side has actual location of
+    // Just ugly hack to find suitable slot on server side. This will only work if server side has actual location of
     // child component
     private void moveChildToAnotherFreePosition(Component child) {
         GridStackDemoUtil.moveChildToAnotherFreePosition(gridStack, child, 1, 40);

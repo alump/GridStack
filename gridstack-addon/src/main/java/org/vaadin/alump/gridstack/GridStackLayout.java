@@ -41,8 +41,6 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
 
     protected final List<Component> components = new ArrayList<Component>();
 
-    private boolean initialClientResponseSent = false;
-
     private final List<GridStackMoveEvent.GridStackMoveListener> moveListeners = new ArrayList<GridStackMoveEvent.GridStackMoveListener>();
 
     /**
@@ -112,13 +110,6 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         }
         getState().gridStackOptions.height = rows;
     }
-
-    @Override
-    public void beforeClientResponse(boolean initial) {
-        super.beforeClientResponse(initial);
-        initialClientResponseSent = true;
-    }
-
 
     @Override
     protected GridStackLayoutState getState() {
