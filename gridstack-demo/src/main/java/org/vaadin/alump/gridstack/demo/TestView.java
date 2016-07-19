@@ -1,10 +1,10 @@
 package org.vaadin.alump.gridstack.demo;
 
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
@@ -12,6 +12,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackButton;
 import org.vaadin.alump.gridstack.GridStackCoordinates;
 import org.vaadin.alump.gridstack.GridStackLayout;
+import org.vaadin.teemu.VaadinIcons;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +24,7 @@ public class TestView extends VerticalLayout implements View {
 
     public final static String VIEW_NAME = "";
 
+    private Navigator navigator;
     private GridStackLayout gridStack;
 
     private AtomicInteger eventCounter = new AtomicInteger(0);
@@ -96,7 +98,7 @@ public class TestView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-
+        navigator = event.getNavigator();
     }
 
     private Component createToolbar() {
@@ -105,7 +107,7 @@ public class TestView extends VerticalLayout implements View {
 
         toolbar.addComponent(new Label("GridStack Demo"));
 
-        toolbar.addComponent(createButton(FontAwesome.PLUS, "Add component", e -> {
+        toolbar.addComponent(createButton(VaadinIcons.PLUS, "Add component", e -> {
             int index = gridStack.getComponentCount();
             final CssLayout layout = new CssLayout();
             layout.addStyleName("hep-layout");
@@ -119,7 +121,7 @@ public class TestView extends VerticalLayout implements View {
             gridStack.addComponent(layout, CLIENT_SELECTS, CLIENT_SELECTS, 1 + rand.nextInt(3), 1);
         }));
 
-        toolbar.addComponent(createButton(FontAwesome.MINUS, "Remove component", e -> {
+        toolbar.addComponent(createButton(VaadinIcons.TRASH, "Remove component", e -> {
             int index = rand.nextInt(gridStack.getComponentCount());
             Iterator<Component> iter = gridStack.iterator();
             for(int i = 0; i < index; ++i) {
@@ -139,10 +141,10 @@ public class TestView extends VerticalLayout implements View {
         });
         toolbar.addComponent(layoutClicks);
 
-        toolbar.addComponent(createButton(FontAwesome.ARROWS, "Move random child to new location",
+        toolbar.addComponent(createButton(VaadinIcons.ARROWS, "Move random child to new location",
                 e -> moveRandomChildToAnotherFreePosition()));
 
-        toolbar.addComponent(createButton(FontAwesome.RANDOM, "Reorder all items to new order", e -> reorderAll()));
+        toolbar.addComponent(createButton(VaadinIcons.RANDOM, "Reorder all items to new order", e -> reorderAll()));
 
         CheckBox staticGrid = new CheckBox("Static");
         staticGrid.setDescription("If static, dragging and resizing are not allowed by user");
@@ -157,6 +159,9 @@ public class TestView extends VerticalLayout implements View {
             gridStack.setComponentLocked(locked, (Boolean)e.getProperty().getValue());
         });
         toolbar.addComponent(lockItem);
+
+        toolbar.addComponent(createButton(VaadinIcons.LIST, "Navigate to list demo",
+                e -> navigator.navigateTo(SplitView.VIEW_NAME)));
 
         return toolbar;
     }

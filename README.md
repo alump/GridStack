@@ -60,8 +60,9 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
-### Version 0.3.1 (TBD)
+### Version 0.3.1 (2016-07-20)
 - isAreaEmpty will now return false if area goes outside the right edge of layout
+- Client side now calls gridstack.js for it's children based on order of coordinates. Issue #18
 
 ### Version 0.3.0 (2016-05-18)
 - Possibility to move and resize already added children

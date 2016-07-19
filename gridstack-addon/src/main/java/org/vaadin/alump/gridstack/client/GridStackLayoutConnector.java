@@ -102,8 +102,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
         if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {
             getWidget().batchUpdate();
-            //for(Connector connector : getChildConnectorsInCoordinateOrder()) {
-            for(Connector connector : getState().childOptions.keySet()) {
+            for(Connector connector : getChildConnectorsInCoordinateOrder()) {
                 Widget widget = ((ComponentConnector)connector).getWidget();
                 getWidget().updateChild(widget, getState().childOptions.get(connector));
             }
@@ -111,7 +110,11 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         }
 	}
 
-    /* Uncomment this if connectors have to updated in coordinate order
+    /**
+     * Short child connectors to order based on their coordinates. This helps to get wanted order defined by server
+     * side.
+     * @return Children in order of coordinates
+     */
     private List<Connector> getChildConnectorsInCoordinateOrder() {
         List<Connector> list = new ArrayList<Connector>();
         for(Connector connector : getState().childOptions.keySet()) {
@@ -123,6 +126,9 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         return list;
     }
 
+    /**
+     * Compare child connectors by their coordinates
+     */
     private transient final Comparator<Connector> childConnectorComparator = new Comparator<Connector>() {
         @Override
         public int compare(Connector a, Connector b) {
@@ -158,7 +164,6 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
             return comp;
         }
     };
-    */
 
     @Override
     public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
