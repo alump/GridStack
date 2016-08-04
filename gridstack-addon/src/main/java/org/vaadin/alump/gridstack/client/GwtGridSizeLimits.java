@@ -57,42 +57,42 @@ public class GwtGridSizeLimits extends JavaScriptObject {
 
     public final native int getMinWidth()
     /*-{
-        return this.min_width;
+        return this.minWidth;
     }-*/;
 
     public final native void setMinWidth(int width)
     /*-{
-        this.min_width = width;
+        this.minWidth = width;
     }-*/;
 
     public final native int getMinHeight()
     /*-{
-        return this.min_height;
+        return this.minHeight;
     }-*/;
 
     public final native void setMinHeight(int height)
     /*-{
-        this.min_height = height;
+        this.minHeight = height;
     }-*/;
 
     public final native int getMaxWidth()
     /*-{
-        return this.max_width;
+        return this.maxWidth;
     }-*/;
 
     public final native void setMaxWidth(int width)
     /*-{
-        this.max_width = width;
+        this.maxWidth = width;
     }-*/;
 
     public final native int getMaxHeight()
     /*-{
-        return this.max_height;
+        return this.maxHeight;
     }-*/;
 
     public final native void setMaxHeight(int height)
     /*-{
-        this.max_height = height;
+        this.maxHeight = height;
     }-*/;
 
 }

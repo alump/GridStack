@@ -269,7 +269,7 @@ public class GwtGridStack extends ComplexPanel {
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
-            grid.add_widget(element);
+            grid.addWidget(element);
         });
     }-*/;
 
@@ -278,7 +278,7 @@ public class GwtGridStack extends ComplexPanel {
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
-            grid.remove_widget(element, false);
+            grid.removeWidget(element, false);
         });
     }-*/;
 
@@ -318,9 +318,9 @@ public class GwtGridStack extends ComplexPanel {
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
-            grid.min_width(element, values.min_width);
-            //grid.max_width(element, values.max_width);
-            grid.min_height(element, values.min_height);
+            grid.minWidth(element, values.minWidth);
+            //grid.max_width(element, values.maxWidth);
+            grid.minHeight(element, values.minHeight);
             //grid.max_height(element, values.max_height);
         });
     }-*/;
@@ -357,7 +357,7 @@ public class GwtGridStack extends ComplexPanel {
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
-            grid.batch_update();
+            grid.batchUpdate();
         });
     }-*/;
 
@@ -370,7 +370,7 @@ public class GwtGridStack extends ComplexPanel {
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
-            grid.set_static(gridStatic);
+            grid.setStatic(gridStatic);
         });
     }-*/;
 
@@ -379,7 +379,7 @@ public class GwtGridStack extends ComplexPanel {
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
-            grid.cell_height(cellHeight);
+            grid.cellHeight(cellHeight);
         });
     }-*/;
 }

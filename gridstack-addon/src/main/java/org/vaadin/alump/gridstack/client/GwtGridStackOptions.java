@@ -68,12 +68,12 @@ public class GwtGridStackOptions extends JavaScriptObject {
 
     public final native boolean isAlwaysShowResizeHandle()
     /*-{
-        return this.always_show_resize_handle;
+        return this.alwaysShowResizeHandle;
     }-*/;
 
     public final native void setAlwaysShowResizeHandle(boolean show)
     /*-{
-        this.always_show_resize_handle = show;
+        this.alwaysShowResizeHandle = show;
     }-*/;
 
     public final native boolean isAnimate()
@@ -88,7 +88,7 @@ public class GwtGridStackOptions extends JavaScriptObject {
 
     public final native int getCellHeight()
     /*-{
-        return this.cell_height;
+        return this.cellHeight;
     }-*/;
 
     public final native void setCellHeight(int height)
@@ -108,32 +108,32 @@ public class GwtGridStackOptions extends JavaScriptObject {
 
     public final native int getMinWidth()
     /*-{
-        return this.min_width;
+        return this.minWidth;
     }-*/;
 
     public final native void setMinWidth(int width)
     /*-{
-        this.min_width = width;
+        this.minWidth = width;
     }-*/;
 
     public final native boolean isStaticGrid()
     /*-{
-        return this.static_grid;
+        return this.staticGrid;
     }-*/;
 
     public final native void setStaticGrid(boolean staticGrid)
     /*-{
-        this.static_grid = staticGrid;
+        this.staticGrid = staticGrid;
     }-*/;
 
     public final native int getVerticalMargin()
     /*-{
-        return this.vertical_margin;
+        return this.verticalMargin;
     }-*/;
 
     public final native void setVerticalMargin(int margin)
     /*-{
-        this.vertical_margin = margin;
+        this.verticalMargin = margin;
     }-*/;
 
     public final native int getWidth()
@@ -148,12 +148,12 @@ public class GwtGridStackOptions extends JavaScriptObject {
 
     public final native String getHandleClass()
     /*-{
-        return this.handle_class;
+        return this.handleClass;
     }-*/;
 
     public final native void setHandleClass(String handleClass)
     /*-{
-        this.handle_class = handleClass;
+        this.handleClass = handleClass;
     }-*/;
 
 }
