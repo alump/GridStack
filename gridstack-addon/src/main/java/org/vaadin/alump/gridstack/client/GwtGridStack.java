@@ -336,7 +336,9 @@ public class GwtGridStack extends ComplexPanel {
 
 
     public void commit() {
-        nativeCommit();
+        if(initialized && isAttached()) {
+            nativeCommit();
+        }
     }
 
     protected native final void nativeCommit()
@@ -349,7 +351,9 @@ public class GwtGridStack extends ComplexPanel {
     }-*/;
 
     public void batchUpdate() {
-        nativeBatchUpdate();
+        if(initialized && isAttached()) {
+            nativeBatchUpdate();
+        }
     }
 
     protected native final void nativeBatchUpdate()

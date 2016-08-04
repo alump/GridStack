@@ -93,7 +93,7 @@ public class GwtGridStackOptions extends JavaScriptObject {
 
     public final native void setCellHeight(int height)
     /*-{
-        this.cell_height = height;
+        this.cellHeight = height;
     }-*/;
 
     public final native int getHeight()

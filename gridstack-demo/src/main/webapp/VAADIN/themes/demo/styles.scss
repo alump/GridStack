@@ -109,4 +109,43 @@
     padding-top: 6px;
     padding-bottom: 6px;
   }
+
+  .split-item-layout {
+    padding: 0.2em;
+
+    .top-row {
+      width: 100%;
+
+      > * {
+        display: inline-block;
+      }
+
+      > .v-label {
+        font-weight: bold;
+        margin-right: 0.3em;
+      }
+
+      &.iter-0 > .v-label {
+        color: blue;
+      }
+
+      &.iter-1 > .v-label {
+        color: green;
+      }
+
+      &.iter-2 > .v-label {
+        color: red;
+      }
+
+      > .v-button {
+        height: 18px;
+        padding: 2px;
+        line-height: 14px;
+      }
+    }
+
+    .second-row {
+      text-align: right;
+    }
+  }
 }

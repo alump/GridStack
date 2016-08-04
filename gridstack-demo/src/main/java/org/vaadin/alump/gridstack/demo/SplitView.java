@@ -6,6 +6,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackLayout;
+import org.vaadin.teemu.VaadinIcons;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +23,7 @@ public class SplitView extends HorizontalSplitPanel implements View {
 
     private Navigator navigator;
     private Random rand = new Random(0xDEADBEEF);
+    private AtomicInteger gridStackCreated = new AtomicInteger(0);
 
     private final static int ORDER_A[] = {28, 17, 4, 22, 2, 15, 20, 29, 24, 9, 12, 14, 10, 11, 13, 5, 16, 1, 18,
             19, 6, 21, 3, 23, 8, 25, 26, 27, 0, 7};
@@ -77,6 +79,13 @@ public class SplitView extends HorizontalSplitPanel implements View {
         resetButton.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(resetButton);
 
+        Button reset2Button = new Button("Reset2", e -> {
+            setSecondComponent(createRightSide());
+        });
+        reset2Button.setWidth(100, Unit.PERCENTAGE);
+        reset2Button.addStyleName(ValoTheme.BUTTON_SMALL);
+        layout.addComponent(reset2Button);
+
         Label expandLabel = new Label("");
         expandLabel.setSizeFull();
         layout.addComponent(expandLabel);
@@ -94,14 +103,45 @@ public class SplitView extends HorizontalSplitPanel implements View {
     }
 
     private Component createRightSide() {
-        gridStack = new GridStackLayout(1).setCellHeight(50).setAnimate(true);
+        int number = gridStackCreated.getAndIncrement();
+        int div = number % 3;
+
+        gridStack = new GridStackLayout(1).setCellHeight(60).setAnimate(true);
         gridStack.setSizeFull();
 
         for(int i = 0; i < 30; ++i) {
-            Label itemLabel = new Label("Item #" + i + " " + ORDER_A_TEXT[i]);
-            gridStack.addComponent(itemLabel, 0, i);
+            CssLayout layout = new CssLayout();
+            layout.addStyleName("split-item-layout");
+            layout.setSizeFull();
+
+            CssLayout topRow = new CssLayout();
+            topRow.addStyleName("top-row");
+            topRow.addStyleName("iter-" + div);
+            layout.addComponent(topRow);
+
+            Label itemLabel = new Label("Item #" + i);
+            itemLabel.setWidthUndefined();
+            topRow.addComponent(itemLabel);
+
+            Button testButton = new Button(VaadinIcons.CLOSE);
+            testButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            testButton.setData(layout);
+            testButton.addClickListener(this::onCloseButton);
+            topRow.addComponent(testButton);
+
+            Label secondLabel = new Label("Or as Romans say... " + ORDER_A_TEXT[i]);
+            secondLabel.addStyleName("second-row");
+            layout.addComponent(secondLabel);
+
+            gridStack.addComponent(layout, 0, i);
         }
+
         return gridStack;
+    }
+
+    private void onCloseButton(Button.ClickEvent event) {
+        Component removeComponent = (Component)event.getButton().getData();
+        gridStack.removeComponent(removeComponent);
     }
 
     @Override

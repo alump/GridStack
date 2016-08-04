@@ -62,6 +62,7 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ### Version 0.3.2 (TBD)
 - Use CamelCase methods to avoid warnings
+- Fix initialization issue when adding GridStack to parent existing on client
 
 ### Version 0.3.1 (2016-07-20)
 - isAreaEmpty will now return false if area goes outside the right edge of layout

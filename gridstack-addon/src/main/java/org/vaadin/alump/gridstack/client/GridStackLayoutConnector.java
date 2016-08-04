@@ -17,6 +17,7 @@
  */
 package org.vaadin.alump.gridstack.client;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
@@ -101,12 +102,14 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         }
 
         if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {
+            Duration duration = new Duration();
             getWidget().batchUpdate();
             for(Connector connector : getChildConnectorsInCoordinateOrder()) {
                 Widget widget = ((ComponentConnector)connector).getWidget();
                 getWidget().updateChild(widget, getState().childOptions.get(connector));
             }
             getWidget().commit();
+            LOGGER.info("onStateChanged took: " + duration.elapsedMillis());
         }
 	}
 
@@ -167,6 +170,8 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
     @Override
     public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
+        Duration duration = new Duration();
+        getWidget().batchUpdate();
 
         for (ComponentConnector child : event.getOldChildren()) {
             if (child.getParent() != this) {
@@ -182,6 +187,9 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
                getWidget().add(child.getWidget(), getState().childOptions.get(child));
             }
         }
+
+        getWidget().commit();
+        LOGGER.info("onConnectorHierarchyChange took: " + duration.elapsedMillis());
     }
 
     @Override
