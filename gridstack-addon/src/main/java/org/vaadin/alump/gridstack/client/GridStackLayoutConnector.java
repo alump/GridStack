@@ -23,6 +23,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.client.Profiler;
 import com.vaadin.client.Util;
 import com.vaadin.client.ui.AbstractLayoutConnector;
 
@@ -36,10 +37,7 @@ import org.vaadin.alump.gridstack.client.shared.GridStackMoveData;
 import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
 import org.vaadin.alump.gridstack.client.shared.GridStackLayoutState;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Connect(org.vaadin.alump.gridstack.GridStackLayout.class)
@@ -54,14 +52,19 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         super.init();
         getWidget().setMoveHandler(new GwtGridStack.GwtGridStackMoveHandler() {
             @Override
-            public void onWidgetsMoved(Widget[] widgets, GwtGridStackChangedItem[] data) {
+            public void onWidgetsMoved(Map<Widget, GwtGridStackChangedItem> movedChildren) {
+
                 List<GridStackMoveData> dataSent = new ArrayList<GridStackMoveData>();
-                for(int i = 0; i < widgets.length; ++i) {
-                    Widget widget = widgets[i];
-                    GwtGridStackChangedItem itemData = data[i];
-                    dataSent.add(new GridStackMoveData(getChildConnectorForWidget(widget),
-                            itemData.getX(), itemData.getY(), itemData.getWidth(), itemData.getHeight()));
+
+                for(Widget movedChild : movedChildren.keySet()) {
+                    ComponentConnector childConnector = getChildConnectorForWidget(movedChild);
+                    if(childConnector != null) {
+                        GwtGridStackChangedItem itemData = movedChildren.get(movedChild);
+                        dataSent.add(new GridStackMoveData(childConnector,
+                                itemData.getX(), itemData.getY(), itemData.getWidth(), itemData.getHeight()));
+                    }
                 }
+
                 getRpcProxy(GridStackServerRpc.class).onChildrenMoved(dataSent);
             }
         });
@@ -94,6 +97,8 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 	@Override
 	public void onStateChanged(StateChangeEvent event) {
 		super.onStateChanged(event);
+
+        Profiler.enter("GridStack onStateChange");
         clickEventHandler.handleEventHandlerRegistration();
 
         if(event.isInitialStateChange() || event.hasPropertyChanged("gridStackOptions")) {
@@ -102,15 +107,15 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         }
 
         if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {
-            Duration duration = new Duration();
             getWidget().batchUpdate();
             for(Connector connector : getChildConnectorsInCoordinateOrder()) {
                 Widget widget = ((ComponentConnector)connector).getWidget();
                 getWidget().updateChild(widget, getState().childOptions.get(connector));
             }
             getWidget().commit();
-            LOGGER.info("onStateChanged took: " + duration.elapsedMillis());
         }
+
+        Profiler.leave("GridStack onStateChange");
 	}
 
     /**
@@ -170,7 +175,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
     @Override
     public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
-        Duration duration = new Duration();
+        Profiler.enter("GridStack onConnectorHierarchyChange");
         getWidget().batchUpdate();
 
         for (ComponentConnector child : event.getOldChildren()) {
@@ -189,7 +194,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         }
 
         getWidget().commit();
-        LOGGER.info("onConnectorHierarchyChange took: " + duration.elapsedMillis());
+        Profiler.leave("GridStack onConnectorHierarchyChange");
     }
 
     @Override

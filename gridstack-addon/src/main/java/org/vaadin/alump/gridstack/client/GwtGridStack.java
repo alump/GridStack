@@ -19,22 +19,23 @@ package org.vaadin.alump.gridstack.client;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
 import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class GwtGridStack extends ComplexPanel {
 
     private final static Logger LOGGER = Logger.getLogger(GwtGridStack.class.getName());
+    private final static int FLUSH_DELAY_MS = 250;
 
     boolean initialized = false;
 
@@ -52,8 +53,11 @@ public class GwtGridStack extends ComplexPanel {
     public final static String DRAG_HANDLE_CLASSNAME = GridStackOptions.DRAG_HANDLE_CLASSNAME;
     public final static String DISABLE_SCROLLING_CLASSNAME = "disable-scrolling";
 
+    private Map<Element, Widget> widgetWrappers = new HashMap<Element, Widget>();
+    private Map<Widget, GwtGridStackChangedItem> moveQueue = new HashMap<Widget, GwtGridStackChangedItem>();
+
     public interface GwtGridStackMoveHandler {
-        void onWidgetsMoved(Widget[] widgets, GwtGridStackChangedItem[] data);
+        void onWidgetsMoved(Map<Widget, GwtGridStackChangedItem> movedChildren);
     }
 
 	public GwtGridStack() {
@@ -109,6 +113,8 @@ public class GwtGridStack extends ComplexPanel {
         } else {
             getElement().appendChild(wrapper);
         }
+
+        widgetWrappers.put(wrapper, widget);
         super.add(widget, wrapper.getFirstChildElement());
     }
 
@@ -116,6 +122,7 @@ public class GwtGridStack extends ComplexPanel {
     public boolean remove(Widget widget) {
         if(initialized) {
             Element wrapper = widget.getElement().getParentElement().getParentElement();
+            widgetWrappers.remove(wrapper);
             removeWidgetWrapperFromGridStack(wrapper);
             wrapper.removeFromParent();
         }
@@ -188,8 +195,6 @@ public class GwtGridStack extends ComplexPanel {
             return;
         }
 
-        List<Widget> widgets = new ArrayList<Widget>();
-
         for(int i = 0; i < items.length; ++i) {
             GwtGridStackChangedItem item = items[i];
             Widget child = mapElementToWidget(item.getElement());
@@ -197,14 +202,27 @@ public class GwtGridStack extends ComplexPanel {
                 // Null children in list can be ignored?
                 continue;
             } else if(moveHandler != null) {
-                widgets.add(child);
+                moveQueue.put(child, item);
             }
         }
 
-        if(!widgets.isEmpty()) {
-            moveHandler.onWidgetsMoved(widgets.toArray(new Widget[widgets.size()]), items);
+        flushMovedTimer.delay();
+    }
+
+    protected class FlushMovedTimer extends Timer {
+        public void delay() {
+            cancel();
+            schedule(FLUSH_DELAY_MS);
+        }
+
+        @Override
+        public void run() {
+            moveHandler.onWidgetsMoved(moveQueue);
+            moveQueue.clear();
         }
     }
+
+    private FlushMovedTimer flushMovedTimer = new FlushMovedTimer();
 
     protected void onGridStackDragStart(Event event) {
         updateEventFlag(true);
@@ -228,9 +246,15 @@ public class GwtGridStack extends ComplexPanel {
     }
 
     protected Widget mapElementToWidget(Element element) {
+
+        Widget child = widgetWrappers.get(element);
+        if(child != null) {
+            return child;
+        }
+
         Iterator<Widget> iter = getChildren().iterator();
         while(iter.hasNext()) {
-            Widget child = iter.next();
+            child = iter.next();
             if(element.isOrHasChild(child.getElement())) {
                 return child;
             }
