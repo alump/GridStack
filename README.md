@@ -60,9 +60,14 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
-### Version 0.3.2 (TBD)
-- Use CamelCase methods to avoid warnings
+### Version 0.3.2 (2016-08-07)
+- Uses CamelCase methods and variables, to avoid deprecated warnings on client side
 - Fix initialization issue when adding GridStack to parent existing on client
+- Improving performance and error management in add-on's code
+- With complex DOM structures in children gridstack.js initializing gets slow. To fight this ready listener interface
+is added. It seams to be faster to add children after gridstack.js has initialized itself, than adding those before
+initialization. To use this trick add GrisStackReadyListener and add child components only when it's called. As extra
+benefit event will tell the width of component on client side. This can used to adjust the layout.
 
 ### Version 0.3.1 (2016-07-20)
 - isAreaEmpty will now return false if area goes outside the right edge of layout

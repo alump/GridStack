@@ -27,4 +27,6 @@ import java.util.List;
  */
 public interface GridStackServerRpc extends LayoutClickRpc {
     void onChildrenMoved(List<GridStackMoveData> moves);
+
+    void onReady(int widthPx);
 }

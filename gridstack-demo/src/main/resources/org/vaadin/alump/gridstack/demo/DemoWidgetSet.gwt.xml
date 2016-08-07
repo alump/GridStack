@@ -31,6 +31,4 @@
 
 
     <inherits name="com.vaadin.DefaultWidgetSet" />
-
-    <set-property name="vaadin.profiler" value="true" />
 </module>

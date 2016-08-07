@@ -39,9 +39,14 @@ import java.util.List;
 @JavaScript({"jquery-1.11.3.min.js", "jquery-ui.min.js", "lodash.min.js", "gridstack.js"})
 public class GridStackLayout extends AbstractLayout implements LayoutEvents.LayoutClickNotifier {
 
+    public final static String INITIALIZING_STYLENAME = "gridstack-initializing";
+
     protected final List<Component> components = new ArrayList<Component>();
 
     private final List<GridStackMoveEvent.GridStackMoveListener> moveListeners = new ArrayList<GridStackMoveEvent.GridStackMoveListener>();
+
+    private final List<GridStackReadyEvent.GridStackReadyListener> readyListeners =
+            new ArrayList<GridStackReadyEvent.GridStackReadyListener>();
 
     /**
      * Use this as x or y coordinate if you want to leave slot selection of component to client side
@@ -75,6 +80,15 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
             }
             fireMoveEvents(events);
         }
+
+        @Override
+        public void onReady(int widthPx) {
+            removeStyleName(INITIALIZING_STYLENAME);
+            final GridStackReadyEvent event = new GridStackReadyEvent(GridStackLayout.this, widthPx);
+            for (GridStackReadyEvent.GridStackReadyListener listener : readyListeners) {
+                listener.onGridStackReady(event);
+            }
+        }
     };
 
     /**
@@ -82,6 +96,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     public GridStackLayout() {
         super();
+        addStyleName(INITIALIZING_STYLENAME);
         registerRpc(serverRpc, GridStackServerRpc.class);
     }
 
@@ -385,6 +400,22 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     public void removeGridStackMoveListener(GridStackMoveEvent.GridStackMoveListener listener) {
         moveListeners.remove(listener);
+    }
+
+    /**
+     * Add listener for gridstack ready event
+     * @param listener Listener added
+     */
+    public void addGridStackReadyListener(GridStackReadyEvent.GridStackReadyListener listener) {
+        readyListeners.add(listener);
+    }
+
+    /**
+     * Remove listener of GridStack ready event
+     * @param listener Listener removed
+     */
+    public void removeGridStackReadyListener(GridStackReadyEvent.GridStackReadyListener listener) {
+        readyListeners.remove(listener);
     }
 
     /**

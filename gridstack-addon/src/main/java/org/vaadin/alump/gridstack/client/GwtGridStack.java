@@ -17,6 +17,7 @@
  */
 package org.vaadin.alump.gridstack.client;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
@@ -26,10 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
 import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class GwtGridStack extends ComplexPanel {
@@ -42,7 +40,8 @@ public class GwtGridStack extends ComplexPanel {
     private static int idCounter = 0;
     public final String elementId;
 
-    protected GwtGridStackMoveHandler moveHandler = null;
+    protected List<GwtGridStackMoveListener> moveListeners = new ArrayList<GwtGridStackMoveListener>();
+    protected List<GwtGridStackReadyListener> readyListeners = new ArrayList<GwtGridStackReadyListener>();
 
     protected long lastEvent = 0;
     protected boolean draggedOrResized = false;
@@ -56,8 +55,12 @@ public class GwtGridStack extends ComplexPanel {
     private Map<Element, Widget> widgetWrappers = new HashMap<Element, Widget>();
     private Map<Widget, GwtGridStackChangedItem> moveQueue = new HashMap<Widget, GwtGridStackChangedItem>();
 
-    public interface GwtGridStackMoveHandler {
+    public interface GwtGridStackMoveListener {
         void onWidgetsMoved(Map<Widget, GwtGridStackChangedItem> movedChildren);
+    }
+
+    public interface GwtGridStackReadyListener {
+        void onReady();
     }
 
 	public GwtGridStack() {
@@ -97,8 +100,13 @@ public class GwtGridStack extends ComplexPanel {
         if(height != null) {
             getElement().setAttribute("data-gs-height", height.toString());
         }
+        Duration duration = new Duration();
         initializeGridStack(options);
+        LOGGER.info("Initialize grid stack took " + duration.elapsedMillis());
         initialized = true;
+        for (GwtGridStackReadyListener readyListener : readyListeners) {
+            readyListener.onReady();
+        }
     }
 
     @Override
@@ -201,7 +209,7 @@ public class GwtGridStack extends ComplexPanel {
             if(child == null) {
                 // Null children in list can be ignored?
                 continue;
-            } else if(moveHandler != null) {
+            } else {
                 moveQueue.put(child, item);
             }
         }
@@ -217,7 +225,9 @@ public class GwtGridStack extends ComplexPanel {
 
         @Override
         public void run() {
-            moveHandler.onWidgetsMoved(moveQueue);
+            for (GwtGridStackMoveListener moveListener : moveListeners) {
+                moveListener.onWidgetsMoved(moveQueue);
+            }
             moveQueue.clear();
         }
     }
@@ -306,8 +316,20 @@ public class GwtGridStack extends ComplexPanel {
         });
     }-*/;
 
-    public void setMoveHandler(GwtGridStackMoveHandler handler) {
-        moveHandler = handler;
+    public void addMoveListener(GwtGridStackMoveListener listener) {
+        moveListeners.add(listener);
+    }
+
+    public void removeMoveListener(GwtGridStackMoveListener listener) {
+        moveListeners.remove(listener);
+    }
+
+    public void addReadyListener(GwtGridStackReadyListener listener) {
+        readyListeners.add(listener);
+    }
+
+    public void removeReadyListener(GwtGridStackReadyListener listener) {
+        readyListeners.remove(listener);
     }
 
 

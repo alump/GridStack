@@ -40,8 +40,8 @@ public class SplitView extends HorizontalSplitPanel implements View {
         addStyleName("test-splitpanel");
 
         setFirstComponent(createLeftSide());
-        setSecondComponent(createRightSide());
-        setSplitPosition(150, Unit.PIXELS);
+        setSecondComponent(createRightSide(true));
+        setSplitPosition(200, Unit.PIXELS);
     }
 
     private Component createLeftSide() {
@@ -79,12 +79,19 @@ public class SplitView extends HorizontalSplitPanel implements View {
         resetButton.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(resetButton);
 
-        Button reset2Button = new Button("Reset2", e -> {
+        Button reset2Button = new Button("Slow New", e -> {
             setSecondComponent(createRightSide());
         });
         reset2Button.setWidth(100, Unit.PERCENTAGE);
         reset2Button.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(reset2Button);
+
+        Button reset3Button = new Button("Fast New", e -> {
+            setSecondComponent(createRightSide(true));
+        });
+        reset3Button.setWidth(100, Unit.PERCENTAGE);
+        reset3Button.addStyleName(ValoTheme.BUTTON_SMALL);
+        layout.addComponent(reset3Button);
 
         Label expandLabel = new Label("");
         expandLabel.setSizeFull();
@@ -103,11 +110,28 @@ public class SplitView extends HorizontalSplitPanel implements View {
     }
 
     private Component createRightSide() {
-        int number = gridStackCreated.getAndIncrement();
-        int div = number % 3;
+        return createRightSide(false);
+    }
 
+    private Component createRightSide(boolean delayedAdd) {
         gridStack = new GridStackLayout(1).setCellHeight(60).setAnimate(true);
         gridStack.setSizeFull();
+
+        if(delayedAdd) {
+            gridStack.addGridStackReadyListener(event -> {
+                System.out.println("Ready signal received: " + event.getWidthPx());
+                addItems(event.getLayout());
+            });
+        } else {
+            addItems(gridStack);
+        }
+
+        return gridStack;
+    }
+
+    private void addItems(GridStackLayout gridStack) {
+        int number = gridStackCreated.getAndIncrement();
+        int div = number % 3;
 
         for(int i = 0; i < 30; ++i) {
             CssLayout layout = new CssLayout();
@@ -135,8 +159,6 @@ public class SplitView extends HorizontalSplitPanel implements View {
 
             gridStack.addComponent(layout, 0, i);
         }
-
-        return gridStack;
     }
 
     private void onCloseButton(Button.ClickEvent event) {

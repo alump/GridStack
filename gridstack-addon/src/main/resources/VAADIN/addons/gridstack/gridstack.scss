@@ -34,6 +34,24 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
   .grid-stack {
     position: relative;
 
+    &.gridstack-initializing {
+      &:after {
+        display: block;
+        position: absolute;
+        top: 70px;
+        left: 50%;
+        width: 30px;
+        height: 30px;
+        margin-left: -15px;
+        content: "\21bb";
+        color: rgba(0,0,0,0.3);
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 30px;
+        pointer-events: none;
+      }
+    }
+
     .grid-stack-placeholder > .placeholder-content {
       border: 1px dashed lightgray;
       margin: 0;

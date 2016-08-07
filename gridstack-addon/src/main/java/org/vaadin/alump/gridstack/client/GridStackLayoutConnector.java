@@ -18,12 +18,12 @@
 package org.vaadin.alump.gridstack.client;
 
 import com.google.gwt.core.client.Duration;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
-import com.vaadin.client.Profiler;
 import com.vaadin.client.Util;
 import com.vaadin.client.ui.AbstractLayoutConnector;
 
@@ -50,25 +50,46 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
     @Override
     public void init() {
         super.init();
-        getWidget().setMoveHandler(new GwtGridStack.GwtGridStackMoveHandler() {
-            @Override
-            public void onWidgetsMoved(Map<Widget, GwtGridStackChangedItem> movedChildren) {
+        getWidget().addMoveListener(moveListener);
+        getWidget().addReadyListener(readyListener);
+    }
 
-                List<GridStackMoveData> dataSent = new ArrayList<GridStackMoveData>();
+    private GwtGridStack.GwtGridStackMoveListener moveListener = new GwtGridStack.GwtGridStackMoveListener() {
 
-                for(Widget movedChild : movedChildren.keySet()) {
-                    ComponentConnector childConnector = getChildConnectorForWidget(movedChild);
-                    if(childConnector != null) {
-                        GwtGridStackChangedItem itemData = movedChildren.get(movedChild);
-                        dataSent.add(new GridStackMoveData(childConnector,
-                                itemData.getX(), itemData.getY(), itemData.getWidth(), itemData.getHeight()));
+        @Override
+        public void onWidgetsMoved(Map<Widget, GwtGridStackChangedItem> movedChildren) {
+            List<GridStackMoveData> dataSent = new ArrayList<GridStackMoveData>();
+
+            for(Widget movedChild : movedChildren.keySet()) {
+                ComponentConnector childConnector = getChildConnectorForWidget(movedChild);
+                if(childConnector != null) {
+                    GwtGridStackChangedItem itemData = movedChildren.get(movedChild);
+                    dataSent.add(new GridStackMoveData(childConnector,
+                            itemData.getX(), itemData.getY(), itemData.getWidth(), itemData.getHeight()));
+                }
+            }
+
+            getRpcProxy(GridStackServerRpc.class).onChildrenMoved(dataSent);
+        }
+    };
+
+    private GwtGridStack.GwtGridStackReadyListener readyListener = new GwtGridStack.GwtGridStackReadyListener() {
+
+        @Override
+        public void onReady() {
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    if(getWidget().isAttached()) {
+                        int widthPx = getWidget().getElement().getClientWidth();
+                        getRpcProxy(GridStackServerRpc.class).onReady(widthPx);
+                    } else {
+                        getRpcProxy(GridStackServerRpc.class).onReady(-1);
                     }
                 }
-
-                getRpcProxy(GridStackServerRpc.class).onChildrenMoved(dataSent);
-            }
-        });
-    }
+            });
+        }
+    };
 
     protected ComponentConnector getChildConnectorForWidget(Widget widget) {
         for(ComponentConnector connector : getChildComponents()) {
@@ -98,13 +119,15 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 	public void onStateChanged(StateChangeEvent event) {
 		super.onStateChanged(event);
 
-        Profiler.enter("GridStack onStateChange");
+        Duration duration = new Duration();
         clickEventHandler.handleEventHandlerRegistration();
 
         if(event.isInitialStateChange() || event.hasPropertyChanged("gridStackOptions")) {
             getWidget().setOptions(getState().gridStackOptions.width, getState().gridStackOptions.height,
                     getState().gridStackOptions);
         }
+
+        LOGGER.info("onStateChange so far " + duration.elapsedMillis() + "ms");
 
         if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {
             getWidget().batchUpdate();
@@ -115,7 +138,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
             getWidget().commit();
         }
 
-        Profiler.leave("GridStack onStateChange");
+        LOGGER.info("onStateChange took " + duration.elapsedMillis() + "ms");
 	}
 
     /**
@@ -175,7 +198,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
     @Override
     public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
-        Profiler.enter("GridStack onConnectorHierarchyChange");
+        Duration duration = new Duration();
         getWidget().batchUpdate();
 
         for (ComponentConnector child : event.getOldChildren()) {
@@ -194,7 +217,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         }
 
         getWidget().commit();
-        Profiler.leave("GridStack onConnectorHierarchyChange");
+        LOGGER.info("onConnectorHierarchyChange took " + duration.elapsedMillis() + "ms");
     }
 
     @Override
