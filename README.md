@@ -60,6 +60,9 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
+### Version 0.3.3 (TBD)
+- Ready event has now easy way to verify it's called first time for that GridStackLayout
+
 ### Version 0.3.2 (2016-08-07)
 - Uses CamelCase methods and variables, to avoid deprecated warnings on client side
 - Fix initialization issue when adding GridStack to parent existing on client

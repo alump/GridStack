@@ -119,8 +119,11 @@ public class SplitView extends HorizontalSplitPanel implements View {
 
         if(delayedAdd) {
             gridStack.addGridStackReadyListener(event -> {
-                System.out.println("Ready signal received: " + event.getWidthPx());
-                addItems(event.getLayout());
+                System.out.println("Ready signal received: " + event.getWidthPx() + " " + event.isFirst());
+                // Only add items once
+                if(event.isFirst()) {
+                    addItems(event.getLayout());
+                }
             });
         } else {
             addItems(gridStack);

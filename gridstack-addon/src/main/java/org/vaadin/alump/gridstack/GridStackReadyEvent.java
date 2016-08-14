@@ -12,9 +12,11 @@ public class GridStackReadyEvent {
 
     private final GridStackLayout layout;
     private final int widthPx;
+    private final boolean first;
 
-    public GridStackReadyEvent(GridStackLayout layout, int widthPx) {
+    public GridStackReadyEvent(GridStackLayout layout, boolean first, int widthPx) {
         this.layout = layout;
+        this.first = first;
         this.widthPx = widthPx;
     }
 
@@ -32,5 +34,14 @@ public class GridStackReadyEvent {
      */
     public int getWidthPx() {
         return widthPx;
+    }
+
+    /**
+     * As this event gets fired each time client side initialized it can happen multiple times for same component. This
+     * method allows to verify it's first time. This is useful if you add child components when listener is called.
+     * @return
+     */
+    public boolean isFirst() {
+        return first;
     }
 }

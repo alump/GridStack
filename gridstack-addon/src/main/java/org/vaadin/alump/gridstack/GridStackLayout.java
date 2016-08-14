@@ -48,6 +48,8 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     private final List<GridStackReadyEvent.GridStackReadyListener> readyListeners =
             new ArrayList<GridStackReadyEvent.GridStackReadyListener>();
 
+    private int readyCalls = 0;
+
     /**
      * Use this as x or y coordinate if you want to leave slot selection of component to client side
      */
@@ -83,8 +85,9 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
 
         @Override
         public void onReady(int widthPx) {
+            readyCalls++;
             removeStyleName(INITIALIZING_STYLENAME);
-            final GridStackReadyEvent event = new GridStackReadyEvent(GridStackLayout.this, widthPx);
+            final GridStackReadyEvent event = new GridStackReadyEvent(GridStackLayout.this, readyCalls == 1, widthPx);
             for (GridStackReadyEvent.GridStackReadyListener listener : readyListeners) {
                 listener.onGridStackReady(event);
             }
