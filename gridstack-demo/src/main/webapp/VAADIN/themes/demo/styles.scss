@@ -147,5 +147,21 @@
     .simple-cover {
       background-size: cover;
     }
+
+    .simple-promo {
+      background: #444;
+
+      .v-label {
+        color: white;
+
+        &.header {
+          font-size: 200%;
+        }
+
+        &.desc {
+          font-family: cursive;
+        }
+      }
+    }
   }
 }
