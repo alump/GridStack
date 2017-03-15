@@ -139,6 +139,7 @@
   .simple-gridstack {
     margin-top: 12px;
     margin-bottom: 12px;
+    min-height: 900px;
 
     .grid-stack-item > .grid-stack-item-content {
       cursor: move;
