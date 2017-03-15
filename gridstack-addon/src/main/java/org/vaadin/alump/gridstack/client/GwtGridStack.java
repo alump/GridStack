@@ -80,7 +80,7 @@ public class GwtGridStack extends ComplexPanel {
             initialize(width, height, GwtGridStackOptions.createFrom(options));
         } else {
             if(options.cellHeight != null) {
-                nativeSetCellHeight(options.cellHeight.intValue());
+                nativeSetCellHeight(options.cellHeight);
             }
             if(options.staticGrid != null) {
                 nativeSetGridStatic(options.staticGrid.booleanValue());
@@ -424,12 +424,25 @@ public class GwtGridStack extends ComplexPanel {
         });
     }-*/;
 
-    protected native final void nativeSetCellHeight(int cellHeight)
+    protected native final void nativeSetCellHeight(String cellHeight)
     /*-{
         var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
         $wnd.$(function () {
             var grid = $wnd.$('#' + elementId).data('gridstack');
             grid.cellHeight(cellHeight);
+        });
+    }-*/;
+
+    public void redraw() {
+        nativeRedraw();
+    }
+
+    protected native final void nativeRedraw()
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.commit();
         });
     }-*/;
 }

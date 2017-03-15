@@ -36,6 +36,7 @@ import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
 import org.vaadin.alump.gridstack.client.shared.GridStackMoveData;
 import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
 import org.vaadin.alump.gridstack.client.shared.GridStackLayoutState;
+import com.google.gwt.user.client.Timer;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -46,6 +47,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
     private transient final static Logger LOGGER = Logger.getLogger(GridStackLayoutConnector.class.getName());
 
     private final static int CONVERT_NEGATIVE_IN_COMPARE = 10000;
+    private final static int INITIAL_REDRAW_DELAY_MS = 250;
 
     @Override
     public void init() {
@@ -102,6 +104,8 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
     @Override
     public void onUnregister() {
+        getWidget().removeMoveListener(moveListener);
+        getWidget().removeReadyListener(readyListener);
         super.onUnregister();
     }
 
@@ -136,6 +140,10 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
                 getWidget().updateChild(widget, getState().childOptions.get(connector));
             }
             getWidget().commit();
+        }
+
+        if(event.isInitialStateChange()) {
+            initialRedraw();
         }
 
         LOGGER.info("onStateChange took " + duration.elapsedMillis() + "ms");
@@ -246,4 +254,19 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
             }
         }
     };
+
+    private final Timer redrawTimer = new Timer() {
+
+        @Override
+        public void run() {
+            if(isEnabled() && getWidget().isAttached()) {
+                getWidget().redraw();
+            }
+        }
+    };
+
+    private void initialRedraw() {
+        redrawTimer.cancel();
+        redrawTimer.schedule(INITIAL_REDRAW_DELAY_MS);
+    }
 }

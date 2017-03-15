@@ -60,8 +60,13 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
-### Version 0.3.3 (TBD)
+### Version 0.4.0 (2017-03-14)
 - Ready event has now easy way to verify it's called first time for that GridStackLayout
+- Vaadin 8 supported and required
+- gridstack.js updated to 0.3.0-dev
+- Found out that min-height: 100%; is **bad** idea to have on grid-stack element, so removed it from demo app. Now resizing and dragging works better.
+- Move to use Vaadin Icons, as it's part of Valo in Vaadin 8
+- Minor fixes done in initial rendering
 
 ### Version 0.3.2 (2016-08-07)
 - Uses CamelCase methods and variables, to avoid deprecated warnings on client side

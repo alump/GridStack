@@ -91,7 +91,7 @@ public class GwtGridStackOptions extends JavaScriptObject {
         return this.cellHeight;
     }-*/;
 
-    public final native void setCellHeight(int height)
+    public final native void setCellHeight(String height)
     /*-{
         this.cellHeight = height;
     }-*/;
@@ -131,7 +131,7 @@ public class GwtGridStackOptions extends JavaScriptObject {
         return this.verticalMargin;
     }-*/;
 
-    public final native void setVerticalMargin(int margin)
+    public final native void setVerticalMargin(String margin)
     /*-{
         this.verticalMargin = margin;
     }-*/;

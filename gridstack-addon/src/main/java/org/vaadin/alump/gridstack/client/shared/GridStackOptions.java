@@ -31,15 +31,11 @@ public class GridStackOptions implements Serializable {
     public Boolean alwaysShowResizeHandle = null;
     public Boolean animate = null;
     public Boolean auto = null;
-    public Integer cellHeight = null;
+    public String cellHeight = null;
     public String handleClass = DRAG_HANDLE_CLASSNAME;
     public Integer height = null;
-    public Boolean floating = null;
-    //public String itemClass = null;
     public Integer minWidth = null;
-    //public String placeHolderClass = null;
-    //TODO resizable
     public Boolean staticGrid = null;
-    public Integer verticalMargin = null;
+    public String verticalMargin = "12px";
     public Integer width = 3;
 }

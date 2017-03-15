@@ -1,19 +1,6 @@
 @import "../valo/valo.scss";
 @import "addons";
 
-/* This font-face declaration must be outside your theme mixin. */
-@font-face {
-  font-family: 'Vaadin-Icons';
-  src: url('fonts/Vaadin-Icons.eot');
-  src: url('fonts/Vaadin-Icons.eot?#iefix') format('embedded-opentype'),
-  url('fonts/Vaadin-Icons.woff') format('woff'),
-  url('fonts/Vaadin-Icons.ttf') format('truetype'),
-  url('fonts/Vaadin-Icons.svg#icomoon') format('svg');
-}
-.Vaadin-Icons {
-  font-family: 'Vaadin-Icons';
-}
-
 // Prefix all selectors in your theme with .demo
 .demo {
 
@@ -58,9 +45,9 @@
     }
   }
 
-  // Usually good idea to have this, to avoid grid-stack sizing itself smaller than it should
+  // Usually good idea to have this, to avoid grid-stack sizing itself invisible
   .v-panel-content > .grid-stack {
-    min-height: 100%;
+    //min-height: 20px;
   }
 
   // Just a example how to define columns styling if more than 8 columns
@@ -146,6 +133,19 @@
 
     .second-row {
       text-align: right;
+    }
+  }
+
+  .simple-gridstack {
+    margin-top: 12px;
+    margin-bottom: 12px;
+
+    .grid-stack-item > .grid-stack-item-content {
+      cursor: move;
+    }
+
+    .simple-cover {
+      background-size: cover;
     }
   }
 }

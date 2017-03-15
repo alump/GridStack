@@ -4,7 +4,7 @@
 
 $gridstack_columns: 3 !default;
 $gridstack_horizontal_padding: 12px !default;
-$gridstack_vertical_padding: 20px !default;
+$gridstack_vertical_padding: 6px !default;
 $gridstack_animation_speed: .3s !default;
 $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
 
@@ -53,7 +53,9 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
     }
 
     .grid-stack-placeholder > .placeholder-content {
-      border: 1px dashed lightgray;
+      border: 4px dashed rgba(0,0,0,0.33);
+      background: rgba(255,255,255,0.33);
+      box-sizing: border-box;
       margin: 0;
       position: absolute;
       top: 0;
@@ -115,13 +117,13 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
         padding: 2px 3px 0 0;
         margin: 0;
 
-        font: normal normal normal 10px/1 FontAwesome;
+        font: normal normal normal 10px/1 Vaadin-Icons;
         font-size: inherit;
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
 
-        &::before { content: "\f065"; }
+        &::before { content: "\e776"; }
       }
 
       > .ui-resizable-se {
@@ -153,8 +155,8 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
         z-index: 90;
 
         &::after {
-          font-family: FontAwesome;
-          content: "\f047";
+          font-family: "Vaadin-Icons";
+          content: "\e755";
           color: white;
           text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
           display: inline-block;

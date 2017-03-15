@@ -22,21 +22,19 @@ import com.vaadin.event.LayoutEvents;
 import com.vaadin.shared.Connector;
 import com.vaadin.shared.EventId;
 import com.vaadin.shared.MouseEventDetails;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
 import org.vaadin.alump.gridstack.client.shared.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Vaadin layout using gridstack.js library to layout components
  *
  * gridstack.js by Pavel Reznikov: http://troolee.github.io/gridstack.js/
  */
-@JavaScript({"jquery-1.11.3.min.js", "jquery-ui.min.js", "lodash.min.js", "gridstack.js"})
+@JavaScript({"jquery-1.11.3.min.js", "jquery-ui.min.js", "lodash.min.js", "gridstack.js", "gridstack.jQueryUI.js"})
 public class GridStackLayout extends AbstractLayout implements LayoutEvents.LayoutClickNotifier {
 
     public final static String INITIALIZING_STYLENAME = "gridstack-initializing";
@@ -362,16 +360,10 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * {@inheritDoc}
      */
     @Override
-    public void addLayoutClickListener(LayoutEvents.LayoutClickListener listener) {
-        addListener(EventId.LAYOUT_CLICK_EVENT_IDENTIFIER,
+    public Registration addLayoutClickListener(LayoutEvents.LayoutClickListener listener) {
+        return addListener(EventId.LAYOUT_CLICK_EVENT_IDENTIFIER,
                 LayoutEvents.LayoutClickEvent.class, listener,
                 LayoutEvents.LayoutClickListener.clickMethod);
-    }
-
-    @Override
-    @Deprecated
-    public void addListener(LayoutEvents.LayoutClickListener layoutClickListener) {
-        addLayoutClickListener(layoutClickListener);
     }
 
     /**
@@ -381,12 +373,6 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     public void removeLayoutClickListener(LayoutEvents.LayoutClickListener listener) {
         removeListener(EventId.LAYOUT_CLICK_EVENT_IDENTIFIER,
                 LayoutEvents.LayoutClickEvent.class, listener);
-    }
-
-    @Override
-    @Deprecated
-    public void removeListener(LayoutEvents.LayoutClickListener layoutClickListener) {
-        removeLayoutClickListener(layoutClickListener);
     }
 
     /**
@@ -557,16 +543,26 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @return This GridStackLayout for command chaining
      */
     public GridStackLayout setVerticalMargin(int marginPx) {
-        getState(true).gridStackOptions.verticalMargin = marginPx;
+        return setVerticalMargin(marginPx + "px");
+    }
+
+    /**
+     * Define vertical margin between components on GridStack layout. Value is only read when rendered on client side
+     * first time, so changing value after that will not have any effect (unless client side is detached).
+     * @param margin Vertical margin in CSS units (eg. '10px' or '3em')
+     * @return This GridStackLayout for command chaining
+     */
+    public GridStackLayout setVerticalMargin(String margin) {
+        getState(true).gridStackOptions.verticalMargin = margin;
         return this;
     }
 
     /**
      * Get vertical margin between components. Value might be mismatch to actual value used, if changed after client
      * side was last attached.
-     * @return Vertical margin in pixels, if null the gridstack.js default is used.
+     * @return Vertical margin in CSS units (eg. '3px' or '0.2em')
      */
-    public Integer getVerticalMargin() {
+    public String getVerticalMargin() {
         return getState(false).gridStackOptions.verticalMargin;
     }
 
@@ -575,17 +571,26 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param heightPx Cell height in pixels
      * @return This GridStackLayout for command chaining
      */
-    public GridStackLayout setCellHeight(int heightPx) {
-        getState(true).gridStackOptions.cellHeight = heightPx;
+    public GridStackLayout setCellHeight(Integer heightPx) {
+        return setCellHeight(Objects.requireNonNull(heightPx) + "px");
+    }
+
+    /**
+     * Define height as CSS unit (eg. '20px' or '3em')
+     * @param height Cell height in CSS units
+     * @return This GridStackLayout for command chaining
+     */
+    public GridStackLayout setCellHeight(String height) {
+        getState(true).gridStackOptions.cellHeight = height;
         return this;
     }
 
     /**
-     * Get height of cell in pixels.
-     * @return Cell height in pixels, if null the gridstack.js default is used.
+     * Get height of cell in CSS units, if not defined will return empty.
+     * @return Cell height in CSS units (eg. '30px' or '3em'), empty if gridstack.js default is used
      */
-    public Integer getCellHeight() {
-        return getState(false).gridStackOptions.cellHeight;
+    public Optional<String> getCellHeight() {
+        return Optional.ofNullable(getState(false).gridStackOptions.cellHeight);
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.vaadin.alump.gridstack.demo;
 
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -12,7 +13,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackButton;
 import org.vaadin.alump.gridstack.GridStackCoordinates;
 import org.vaadin.alump.gridstack.GridStackLayout;
-import org.vaadin.teemu.VaadinIcons;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,14 +20,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Main test/demo view of GridStackLayout
  */
-public class TestView extends VerticalLayout implements View {
+public class TestView extends AbstractView {
 
-    public final static String VIEW_NAME = "";
+    public final static String VIEW_NAME = "test";
 
-    private Navigator navigator;
     private GridStackLayout gridStack;
 
     private AtomicInteger eventCounter = new AtomicInteger(0);
+    private AtomicInteger itemCounter = new AtomicInteger(0);
     private TextArea eventConsole = new TextArea();
 
     private Random rand = new Random(0xDEADBEEF);
@@ -54,7 +54,7 @@ public class TestView extends VerticalLayout implements View {
         gridStack.addStyleName("eight-column-grid-stack");
 
         // One cell height is set to 80 pixels
-        gridStack.setCellHeight(80);
+        gridStack.setCellHeight("80px");
 
         addComponent(createToolbar());
 
@@ -63,10 +63,6 @@ public class TestView extends VerticalLayout implements View {
         gridStackWrapper.setSizeFull();
         addComponent(gridStackWrapper);
         setExpandRatio(gridStackWrapper, 1f);
-
-        addComponent(new Link(
-                "This project is based on gridstack.js JavaScript library, written by Pavel Reznikov",
-                new ExternalResource("https://github.com/troolee/gridstack.js")));
 
         // ----
 
@@ -90,38 +86,36 @@ public class TestView extends VerticalLayout implements View {
         gridStack.addGridStackMoveListener(events -> {
             final int eventId = eventCounter.getAndIncrement();
             events.stream().forEach(event -> {
+                if(event.getMovedChild() instanceof TestItem) {
+                    TestItem item = (TestItem)event.getMovedChild();
+                    item.setHeader(event.getNew());
+                }
                 addEvent("event #" + eventId + ": Moved from " + event.getOld().toString() + " to "
                         + event.getNew().toString());
             });
         });
     }
 
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-        navigator = event.getNavigator();
-    }
-
     private Component createToolbar() {
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
 
+        toolbar.addComponent(createButton(VaadinIcons.MENU, "Back to menu",
+                e -> navigateTo(MenuView.VIEW_NAME)));
+
         toolbar.addComponent(new Label("GridStack Demo"));
 
         toolbar.addComponent(createButton(VaadinIcons.PLUS, "Add component", e -> {
-            int index = gridStack.getComponentCount();
-            final CssLayout layout = new CssLayout();
-            layout.addStyleName("hep-layout");
-            layout.addComponent(new Label("Hep #" + index));
-            Button button = new Button("Remove this", ce -> {
-                gridStack.removeComponent(layout);
-            });
-            button.addStyleName(ValoTheme.BUTTON_SMALL);
-            button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-            layout.addComponent(button);
+            TestItem layout = new TestItem(itemCounter);
             gridStack.addComponent(layout, CLIENT_SELECTS, CLIENT_SELECTS, 1 + rand.nextInt(3), 1);
+            layout.addRemoveClickListener(re -> gridStack.removeComponent(layout));
         }));
 
         toolbar.addComponent(createButton(VaadinIcons.TRASH, "Remove component", e -> {
+            if(gridStack.getComponentCount() < 1) {
+                Notification.show("Nothing to remove!");
+                return;
+            }
             int index = rand.nextInt(gridStack.getComponentCount());
             Iterator<Component> iter = gridStack.iterator();
             for(int i = 0; i < index; ++i) {
@@ -133,7 +127,7 @@ public class TestView extends VerticalLayout implements View {
         CheckBox layoutClicks = new CheckBox("Layout clicks");
         layoutClicks.setDescription("Adds layout click listener to GridStackLayout");
         layoutClicks.addValueChangeListener(e -> {
-            if((Boolean)e.getProperty().getValue()) {
+            if(e.getValue()) {
                 gridStack.addLayoutClickListener(layoutClickListener);
             } else {
                 gridStack.removeLayoutClickListener(layoutClickListener);
@@ -149,19 +143,16 @@ public class TestView extends VerticalLayout implements View {
         CheckBox staticGrid = new CheckBox("Static");
         staticGrid.setDescription("If static, dragging and resizing are not allowed by user");
         staticGrid.addValueChangeListener(e -> {
-            gridStack.setStaticGrid((Boolean)e.getProperty().getValue());
+            gridStack.setStaticGrid(e.getValue());
         });
         toolbar.addComponent(staticGrid);
 
         CheckBox lockItem = new CheckBox("Lock child");
         lockItem.setDescription("Define if item with text \"can be locked\" is locked or not");
         lockItem.addValueChangeListener(e -> {
-            gridStack.setComponentLocked(locked, (Boolean)e.getProperty().getValue());
+            gridStack.setComponentLocked(locked, e.getValue());
         });
         toolbar.addComponent(lockItem);
-
-        toolbar.addComponent(createButton(VaadinIcons.LIST, "Navigate to list demo",
-                e -> navigator.navigateTo(SplitView.VIEW_NAME)));
 
         return toolbar;
     }
@@ -215,6 +206,7 @@ public class TestView extends VerticalLayout implements View {
         layout.setComponentAlignment(login, Alignment.BOTTOM_RIGHT);
         Label info = new Label("Also this child can be dragged without handle. GridStackButton used to resolve event "
                 + "issues caused by normal Button.");
+        info.setWidth(100, Unit.PERCENTAGE);
         info.addStyleName("info-text");
         layout.addComponent(info);
         return layout;

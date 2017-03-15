@@ -1,12 +1,12 @@
 package org.vaadin.alump.gridstack.demo;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackLayout;
-import org.vaadin.teemu.VaadinIcons;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,10 +98,11 @@ public class SplitView extends HorizontalSplitPanel implements View {
         layout.addComponent(expandLabel);
         layout.setExpandRatio(expandLabel, 1f);
 
-        Button toTestButton = new Button("Demo", e -> {
-            navigator.navigateTo(TestView.VIEW_NAME);
+        Button toTestButton = new Button(VaadinIcons.MENU.getHtml(), e -> {
+            navigator.navigateTo(MenuView.VIEW_NAME);
         });
-        toTestButton.setDescription("To main demo view");
+        toTestButton.setCaptionAsHtml(true);
+        toTestButton.setDescription("Back to menu");
         toTestButton.setWidth(100, Unit.PERCENTAGE);
         toTestButton.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(toTestButton);
