@@ -48,6 +48,7 @@ public class SimpleView extends AbstractView {
         gridStack.setWidth(100, Unit.PERCENTAGE);
 
         Panel gridStackPanel = new Panel(gridStack);
+        gridStackPanel.addStyleName(ValoTheme.PANEL_BORDERLESS);
         gridStackPanel.setSizeFull();
         addComponent(gridStackPanel);
         setExpandRatio(gridStackPanel, 1f);
