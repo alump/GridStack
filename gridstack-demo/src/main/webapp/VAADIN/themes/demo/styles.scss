@@ -158,15 +158,15 @@
     .simple-promo {
       .v-label {
         color: #333;
+        font-family: cursive;
 
         &.header {
-          font-family: cursive;
           font-weight: 400;
           font-size: 200%;
         }
 
         &.desc {
-          font-family: cursive;
+          //empty
         }
       }
     }

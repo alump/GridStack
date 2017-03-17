@@ -258,6 +258,7 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
           position: relative;
           padding: 10px;
           z-index: 1;
+          overflow: hidden;
         }
 
         &:before, &:after {
