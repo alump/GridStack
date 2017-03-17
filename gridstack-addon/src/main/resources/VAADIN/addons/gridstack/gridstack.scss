@@ -53,7 +53,7 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
     }
 
     .grid-stack-placeholder > .placeholder-content {
-      border: 4px dashed rgba(0,0,0,0.33);
+      border: 3px dashed rgba(0,0,0,0.25);
       background: rgba(255,255,255,0.33);
       box-sizing: border-box;
       margin: 0;
@@ -236,6 +236,55 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
 
     &.with-8-columns {
       @include gridstacklayout-columns(8);
+    }
+
+    &.papers {
+      overflow: visible;
+
+      .ui-resizable-handle {
+        background: rgba(255,255,255,0.75);
+        border-radius: 6px;
+      }
+
+      .grid-stack-item-content {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        overflow: visible !important;
+        border-left-color: white;
+        border-top-color: white;
+
+        > .paper-item {
+          box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+          background-color: #fff;
+          position: relative;
+          padding: 10px;
+          z-index: 1;
+        }
+
+        &:before, &:after {
+          position: absolute;
+          width: 40%;
+          max-width: 200px;
+          height: 10px;
+          content: " ";
+          bottom: 8px;
+          background: transparent;
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+          pointer-events: none;
+          user-select: none;
+        }
+
+        &:before {
+          left: 2px;
+          right: auto;
+          transform: skew(-5deg) rotate(-5deg);
+        }
+
+        &:after {
+          left: auto;
+          right: 2px;
+          transform: skew(5deg) rotate(5deg);
+        }
+      }
     }
   }
 }

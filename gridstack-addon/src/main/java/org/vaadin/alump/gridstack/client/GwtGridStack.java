@@ -178,6 +178,10 @@ public class GwtGridStack extends ComplexPanel {
             wrapper.addClassName(DISABLE_SCROLLING_CLASSNAME);
         }
 
+        if (info.styleName != null) {
+            wrapper.addClassName(info.styleName);
+        }
+
         wrapper.appendChild(content);
 
         if(info.useDragHandle) {

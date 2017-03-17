@@ -60,6 +60,10 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
+### Version 0.4.1 (TBD)
+- Add method to set style name for item wrapper
+- Alternative paper styling from Masonry add-on
+
 ### Version 0.4.0 (2017-03-14)
 - Ready event has now easy way to verify it's called first time for that GridStackLayout
 - Vaadin 8 supported and required

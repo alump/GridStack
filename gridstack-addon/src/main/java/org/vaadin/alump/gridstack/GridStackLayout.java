@@ -686,4 +686,29 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         return true;
     }
 
+    /**
+     * Set style name applied to item wrapper around given child component. Currently this style name is only applied
+     * when child is added to layout. So remember to set it right after adding child to layout (before first client
+     * update after it).
+     * @param child Child component
+     * @param styleName Style name applied to item wrapper
+     */
+    public void setChildItemStyleName(Component child, String styleName) {
+        GridStackChildOptions childOptions = getState().childOptions.get(child);
+        if(childOptions == null) {
+            throw new IllegalArgumentException("Child not found");
+        }
+        childOptions.styleName = styleName;
+    }
+
+    /**
+     * Get style name applied to item wrapper of given child component
+     * @param child Child component
+     * @return Style name applied
+     */
+    public Optional<String> getChildItemStyleName(Component child) {
+        return Optional.ofNullable(getState(false).childOptions.get(child))
+                .flatMap(o -> Optional.ofNullable(o.styleName));
+    }
+
 }

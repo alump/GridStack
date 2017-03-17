@@ -141,6 +141,12 @@
     margin-bottom: 12px;
     min-height: 900px;
 
+    .grid-stack-item.yellowish-background {
+      .grid-stack-item-content > .paper-item {
+        background: #FFF8DF;
+      }
+    }
+
     .grid-stack-item > .grid-stack-item-content {
       cursor: move;
     }
@@ -150,12 +156,12 @@
     }
 
     .simple-promo {
-      background: #444;
-
       .v-label {
-        color: white;
+        color: #333;
 
         &.header {
+          font-family: cursive;
+          font-weight: 400;
           font-size: 200%;
         }
 

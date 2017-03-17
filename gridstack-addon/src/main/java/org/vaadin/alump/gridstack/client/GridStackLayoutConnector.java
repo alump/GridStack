@@ -56,41 +56,30 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         getWidget().addReadyListener(readyListener);
     }
 
-    private GwtGridStack.GwtGridStackMoveListener moveListener = new GwtGridStack.GwtGridStackMoveListener() {
+    private GwtGridStack.GwtGridStackMoveListener moveListener = movedChildren ->  {
+        List<GridStackMoveData> dataSent = new ArrayList<GridStackMoveData>();
 
-        @Override
-        public void onWidgetsMoved(Map<Widget, GwtGridStackChangedItem> movedChildren) {
-            List<GridStackMoveData> dataSent = new ArrayList<GridStackMoveData>();
-
-            for(Widget movedChild : movedChildren.keySet()) {
-                ComponentConnector childConnector = getChildConnectorForWidget(movedChild);
-                if(childConnector != null) {
-                    GwtGridStackChangedItem itemData = movedChildren.get(movedChild);
-                    dataSent.add(new GridStackMoveData(childConnector,
-                            itemData.getX(), itemData.getY(), itemData.getWidth(), itemData.getHeight()));
-                }
+        for(Widget movedChild : movedChildren.keySet()) {
+            ComponentConnector childConnector = getChildConnectorForWidget(movedChild);
+            if(childConnector != null) {
+                GwtGridStackChangedItem itemData = movedChildren.get(movedChild);
+                dataSent.add(new GridStackMoveData(childConnector,
+                        itemData.getX(), itemData.getY(), itemData.getWidth(), itemData.getHeight()));
             }
-
-            getRpcProxy(GridStackServerRpc.class).onChildrenMoved(dataSent);
         }
+
+        getRpcProxy(GridStackServerRpc.class).onChildrenMoved(dataSent);
     };
 
-    private GwtGridStack.GwtGridStackReadyListener readyListener = new GwtGridStack.GwtGridStackReadyListener() {
-
-        @Override
-        public void onReady() {
-            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                @Override
-                public void execute() {
-                    if(getWidget().isAttached()) {
-                        int widthPx = getWidget().getElement().getClientWidth();
-                        getRpcProxy(GridStackServerRpc.class).onReady(widthPx);
-                    } else {
-                        getRpcProxy(GridStackServerRpc.class).onReady(-1);
-                    }
-                }
-            });
-        }
+    private GwtGridStack.GwtGridStackReadyListener readyListener = () -> {
+        Scheduler.get().scheduleDeferred(() -> {
+            if (getWidget().isAttached()) {
+                int widthPx = getWidget().getElement().getClientWidth();
+                getRpcProxy(GridStackServerRpc.class).onReady(widthPx);
+            } else {
+                getRpcProxy(GridStackServerRpc.class).onReady(-1);
+            }
+        });
     };
 
     protected ComponentConnector getChildConnectorForWidget(Widget widget) {
@@ -168,40 +157,37 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
     /**
      * Compare child connectors by their coordinates
      */
-    private transient final Comparator<Connector> childConnectorComparator = new Comparator<Connector>() {
-        @Override
-        public int compare(Connector a, Connector b) {
-            GridStackChildOptions aOptions = getState().childOptions.get(a);
-            GridStackChildOptions bOptions = getState().childOptions.get(b);
+    private transient final Comparator<Connector> childConnectorComparator = (a, b) -> {
+        GridStackChildOptions aOptions = getState().childOptions.get(a);
+        GridStackChildOptions bOptions = getState().childOptions.get(b);
 
-            int aY = aOptions.y;
-            if(aY < 0) {
-                aY = CONVERT_NEGATIVE_IN_COMPARE;
-            }
-
-            int bY = bOptions.y;
-            if(bY < 0) {
-                bY = CONVERT_NEGATIVE_IN_COMPARE;
-            }
-
-            int comp = Integer.compare(aY, bY);
-            if(comp == 0) {
-
-                int aX = aOptions.x;
-                if(aX < 0) {
-                    aX = CONVERT_NEGATIVE_IN_COMPARE;
-                }
-
-                int bX = bOptions.x;
-                if(bX < 0) {
-                    bX = CONVERT_NEGATIVE_IN_COMPARE;
-                }
-
-                comp = Integer.compare(aX, bX);
-            }
-
-            return comp;
+        int aY = aOptions.y;
+        if(aY < 0) {
+            aY = CONVERT_NEGATIVE_IN_COMPARE;
         }
+
+        int bY = bOptions.y;
+        if(bY < 0) {
+            bY = CONVERT_NEGATIVE_IN_COMPARE;
+        }
+
+        int comp = Integer.compare(aY, bY);
+        if(comp == 0) {
+
+            int aX = aOptions.x;
+            if(aX < 0) {
+                aX = CONVERT_NEGATIVE_IN_COMPARE;
+            }
+
+            int bX = bOptions.x;
+            if(bX < 0) {
+                bX = CONVERT_NEGATIVE_IN_COMPARE;
+            }
+
+            comp = Integer.compare(aX, bX);
+        }
+
+        return comp;
     };
 
     @Override
