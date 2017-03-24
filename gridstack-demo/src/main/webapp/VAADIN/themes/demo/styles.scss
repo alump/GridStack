@@ -155,6 +155,10 @@
       background-size: cover;
     }
 
+    .v-label.error {
+      color: darkred;
+    }
+
     .simple-promo {
       .v-label {
         color: #333;
@@ -167,6 +171,21 @@
 
         &.desc {
           //empty
+        }
+      }
+    }
+
+    .weather-presentation {
+      width: 100%;
+      margin-bottom: 0.5em;
+
+      .name-and-weather {
+        font-size: 125%;
+        font-weight: 600;
+
+        .weather {
+          color: red;
+          font-weight: 100;
         }
       }
     }

@@ -6,8 +6,14 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackLayout;
 import org.vaadin.alump.gridstack.GridStackStyling;
+import org.vaadin.alump.gridstack.demo.openweathermap.CityID;
+import org.vaadin.alump.gridstack.demo.openweathermap.OpenWeatherMapEntry;
+import org.vaadin.alump.gridstack.demo.openweathermap.OpenWeatherMapQuery;
+import org.vaadin.alump.gridstack.demo.openweathermap.WeatherPresentation;
 import org.vaadin.alump.scaleimage.ScaleImage;
 
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -22,6 +28,8 @@ public class SimpleView extends AbstractView {
     private final static String LOREM_IPSUM_2 = "Duis aute irure dolor in reprehenderit in voluptate velit esse "
         + "cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
         + "officia deserunt mollit anim id est laborum.";
+
+    private final static long DELAY_WEATHER_LOAD_MS = 2000L;
 
     public final static String VIEW_NAME = "simple";
     private GridStackLayout gridStack;
@@ -54,6 +62,83 @@ public class SimpleView extends AbstractView {
         setExpandRatio(gridStackPanel, 1f);
 
         initialize();
+    }
+
+    private void getWeathers(ComponentContainer container) {
+        OpenWeatherMapQuery query = new OpenWeatherMapQuery();
+        try {
+            query.run(r -> {
+                Iterator<OpenWeatherMapEntry> iterator = r.getWeathers().iterator();
+                container.getUI().access(() -> {
+                    container.removeAllComponents();
+                    if(iterator.hasNext()) {
+                        container.addComponent(new WeatherPresentation(iterator.next()));
+                    }
+                });
+                try {
+                    while (iterator.hasNext()) {
+                        Thread.sleep(2000);
+                        container.getUI().access(() -> {
+                            container.addComponent(new WeatherPresentation(iterator.next()));
+                        });
+                    }
+                } catch(InterruptedException e) {
+
+                }
+            });
+        } catch(IOException e) {
+            e.printStackTrace();
+            container.getUI().access(() -> {
+                container.removeAllComponents();
+                Label error = new Label("Sorry, I failed to load content.");
+                error.addStyleName("error");
+                error.setWidth(100, Unit.PERCENTAGE);
+                container.addComponent(error);
+            });
+        }
+
+    }
+
+    private void delayedWeatherReader(ComponentContainer container) {
+        try {
+            Thread.sleep(DELAY_WEATHER_LOAD_MS);
+
+            if(!container.isAttached()) {
+                return;
+            }
+
+            getWeathers(container);
+
+        } catch(InterruptedException e) {
+            return;
+        }
+    }
+
+    private Component createWeatherChild() {
+        final CssLayout wrapper = GridStackStyling.createPaperItemWrapper();
+
+        // Because paper styling, this trick is needed to make things scrollable again. As making the component itself
+        // to scroll it will break paper look and feel styling.
+        CssLayout scrollWrapper = new CssLayout();
+        scrollWrapper.setWidth(100, Unit.PERCENTAGE);
+        Panel makeScrollable = new Panel(scrollWrapper);
+        makeScrollable.setSizeFull();
+        makeScrollable.addStyleName(ValoTheme.PANEL_BORDERLESS);
+        wrapper.addComponent(makeScrollable);
+
+        Label loading = new Label(
+                "Loading weather information (this is made slow by design, to test dynamic changes to content)...");
+        loading.setWidth(100, Unit.PERCENTAGE);
+        scrollWrapper.addComponent(loading);
+
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.setIndeterminate(true);
+        scrollWrapper.addComponent(progressBar);
+
+        Thread thread = new Thread(() -> this.delayedWeatherReader(scrollWrapper));
+        thread.start();
+
+        return wrapper;
     }
 
     private Component createImageChild() {
@@ -113,8 +198,12 @@ public class SimpleView extends AbstractView {
 
         gridStack.addComponent(createImageChild(), 1, 0, 1, 2, false);
         gridStack.addComponent(createImageChild(), 0, 2, 2, 1, false);
-        gridStack.addComponent(createImageChild(), 2, 0, 1, 3, false);
+        gridStack.addComponent(createImageChild(), 2, 0, 1, 2, false);
+
+        gridStack.addComponent(createWeatherChild(), 2, 2, 1, 1);
+
         gridStack.iterator().forEachRemaining(c -> gridStack.setWrapperScrolling(c, false));
+
     }
 
 }

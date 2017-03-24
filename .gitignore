@@ -6,3 +6,4 @@ gridstack-demo/src/main/webapp/VAADIN/widgetsets/
 gridstack-demo/src/main/webapp/VAADIN/themes/demo/addons.scss
 *.scss.cache
 .DS_Store
+gridstack-demo/src/main/resources/openweathermap.properties

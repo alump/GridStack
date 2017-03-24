@@ -1,5 +1,6 @@
 package org.vaadin.alump.gridstack.demo;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
@@ -13,6 +14,7 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 @Theme("demo")
 @Title("GridStack Add-on Demo")
 @SuppressWarnings("serial")
+@Push()
 public class DemoUI extends UI {
 
     private Navigator navigator;
