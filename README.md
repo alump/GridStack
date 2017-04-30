@@ -2,7 +2,7 @@
 
 This add-on provides GridStackLayout layout component that uses [gridstack.js](https://github.com/troolee/gridstack.js) on client side.
 
-[![Build Status](http://siika.fi:8888/jenkins/job/GridStack%20(Vaadin)/badge/icon)](http://siika.fi:8888/jenkins/job/GridStack%20(Vaadin)/)
+[![Build Status](https://epic.siika.fi/jenkins/job/SearchDropDown%20(Vaadin)/badge/icon)](https://epic.siika.fi/jenkins/job/SearchDropDown%20(Vaadin)/)
 
 ## Code example
 
