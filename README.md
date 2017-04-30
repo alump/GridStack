@@ -1,4 +1,4 @@
-# GridStack Add-on for Vaadin 7.5+
+# GridStack Add-on for Vaadin
 
 This add-on provides GridStackLayout layout component that uses [gridstack.js](https://github.com/troolee/gridstack.js) on client side.
 
