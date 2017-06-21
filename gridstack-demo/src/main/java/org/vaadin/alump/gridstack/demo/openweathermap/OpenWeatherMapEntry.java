@@ -63,6 +63,24 @@ public class OpenWeatherMapEntry {
             return Optional.ofNullable(description);
         }
 
+        public WeatherRating getRating() {
+            String value = getMain().orElse("").toLowerCase();
+
+            switch(value) {
+                case "clear":
+                    return WeatherRating.NICE;
+                case "haze":
+                case "rain":
+                    return WeatherRating.SAD_PANDA;
+                case "clouds":
+                case "mist":
+                    return WeatherRating.MEH;
+                default:
+                    System.out.println("Unmapped " + value);
+                    return WeatherRating.MEH;
+            }
+        }
+
         @Override
         public String toString() {
             return getDescription().orElseGet(() -> getMain().orElse("n/a"));
@@ -116,5 +134,13 @@ public class OpenWeatherMapEntry {
         StringJoiner sj = new StringJoiner(", ");
         weather.forEach(w -> sj.add(w.toString()));
         return Optional.of(sj.toString()).filter(s -> !s.isEmpty());
+    }
+
+    public WeatherRating getRating() {
+        if(weather == null || weather.isEmpty()) {
+            return  WeatherRating.MEH;
+        }
+        return weather.stream().map(w -> w.getRating()).sorted((a,b) -> Integer.compare(a.getLevel(), b.getLevel()))
+                .findFirst().orElse(WeatherRating.MEH);
     }
 }

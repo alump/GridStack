@@ -5,9 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by alump on 24/03/2017.
- */
 public class WeatherResponse {
     private final List<OpenWeatherMapEntry> weathers;
 

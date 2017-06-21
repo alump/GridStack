@@ -184,9 +184,30 @@
         font-weight: 600;
 
         .weather {
-          color: red;
           font-weight: 100;
+          color: #DD0;
+
+          &.rating-nice {
+            color: green;
+          }
+
+          &.rating-sad-panda {
+            color: red;
+          }
         }
+      }
+    }
+
+    .weather-list {
+      position: relative;
+      min-height: 100%;
+
+      .loading-weather {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -20px;
+        margin-top: -20px;
       }
     }
   }

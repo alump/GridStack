@@ -120,7 +120,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
                     getState().gridStackOptions);
         }
 
-        LOGGER.info("onStateChange so far " + duration.elapsedMillis() + "ms");
+        //LOGGER.info("onStateChange so far " + duration.elapsedMillis() + "ms");
 
         if(getWidget().isInitialized() && event.hasPropertyChanged("childOptions")) {
             getWidget().batchUpdate();
@@ -135,7 +135,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
             initialRedraw();
         }
 
-        LOGGER.info("onStateChange took " + duration.elapsedMillis() + "ms");
+        //LOGGER.info("onStateChange took " + duration.elapsedMillis() + "ms");
 	}
 
     /**
@@ -211,7 +211,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
         }
 
         getWidget().commit();
-        LOGGER.info("onConnectorHierarchyChange took " + duration.elapsedMillis() + "ms");
+        //LOGGER.info("onConnectorHierarchyChange took " + duration.elapsedMillis() + "ms");
     }
 
     @Override
@@ -253,6 +253,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 
     private void initialRedraw() {
         redrawTimer.cancel();
+        getWidget().getElement().removeClassName(GwtGridStack.READY_CLASSNAME);
         redrawTimer.schedule(INITIAL_REDRAW_DELAY_MS);
     }
 }

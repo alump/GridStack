@@ -51,6 +51,8 @@ public class GwtGridStack extends ComplexPanel {
     public final static String CONTENT_CLASSNAME = "grid-stack-item-content";
     public final static String DRAG_HANDLE_CLASSNAME = GridStackOptions.DRAG_HANDLE_CLASSNAME;
     public final static String DISABLE_SCROLLING_CLASSNAME = "disable-scrolling";
+    public final static String INITIALIZING_CLASSNAME = "gridstack-initializing";
+    public final static String READY_CLASSNAME = "gridstack-ready";
 
     private Map<Element, Widget> widgetWrappers = new HashMap<Element, Widget>();
     private Map<Widget, GwtGridStackChangedItem> moveQueue = new HashMap<Widget, GwtGridStackChangedItem>();
@@ -94,6 +96,8 @@ public class GwtGridStack extends ComplexPanel {
             return;
         }
 
+        getElement().addClassName(INITIALIZING_CLASSNAME);
+
         if(width != null) {
             getElement().setAttribute("data-gs-width", width.toString());
         }
@@ -104,6 +108,9 @@ public class GwtGridStack extends ComplexPanel {
         initializeGridStack(options);
         LOGGER.info("Initialize grid stack took " + duration.elapsedMillis());
         initialized = true;
+        getElement().removeClassName(INITIALIZING_CLASSNAME);
+        getElement().addClassName(READY_CLASSNAME);
+
         for (GwtGridStackReadyListener readyListener : readyListeners) {
             readyListener.onReady();
         }
@@ -438,7 +445,9 @@ public class GwtGridStack extends ComplexPanel {
     }-*/;
 
     public void redraw() {
+        getElement().removeClassName(READY_CLASSNAME);
         nativeRedraw();
+        getElement().addClassName(READY_CLASSNAME);
     }
 
     protected native final void nativeRedraw()

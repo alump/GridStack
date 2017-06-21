@@ -33,7 +33,7 @@ public class DemoUI extends UI {
         navigator.addView(MenuView.VIEW_NAME, MenuView.class);
         navigator.addView(TestView.VIEW_NAME, TestView.class);
         navigator.addView(SplitView.VIEW_NAME, SplitView.class);
-        navigator.addView(SimpleView.VIEW_NAME, SimpleView.class);
+        navigator.addView(SimpleView.VIEW_NAME, new SimpleView());
     }
 
 }

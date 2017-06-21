@@ -27,7 +27,6 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
       &[data-gs-max-width='#{$i}'] { max-width: (100% / $gridstack-columns) * $i; }
     }
   }
-
 }
 
 @mixin gridstack {
@@ -53,8 +52,8 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
     }
 
     .grid-stack-placeholder > .placeholder-content {
-      border: 3px dashed rgba(0,0,0,0.25);
-      background: rgba(255,255,255,0.33);
+      border: 2px dashed rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.10);
       box-sizing: border-box;
       margin: 0;
       position: absolute;
@@ -238,6 +237,14 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
       @include gridstacklayout-columns(8);
     }
 
+    .grid-stack-item-content {
+      &:before, &:after {
+        opacity: 0;
+        transition: opacity 2s ease-in;
+        transition-delay: 1s;
+      }
+    }
+
     &.papers {
       overflow: visible;
 
@@ -272,6 +279,9 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
           box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
           pointer-events: none;
           user-select: none;
+          opacity: 0;
+          transition: opacity 1s ease-in;
+          transition-delay: 2s;
         }
 
         &:before {
@@ -284,6 +294,22 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
           left: auto;
           right: 2px;
           transform: skew(5deg) rotate(5deg);
+        }
+      }
+    }
+
+    &.gridstack-initializing {
+      .grid-stack-item-content {
+        &:before, &:after {
+          display: none;
+        }
+      }
+    }
+
+    &.gridstack-ready {
+      .grid-stack-item-content {
+        &:before, &:after {
+          opacity: 1;
         }
       }
     }

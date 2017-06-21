@@ -12,8 +12,11 @@ public class WeatherPresentation extends CssLayout {
     public WeatherPresentation(OpenWeatherMapEntry entry) {
         addStyleName("weather-presentation");
 
+        String weatherStyleNames = "weather rating-" + entry.getRating().getStyleName();
+
         Label name = new Label(entry.getName()
-                + entry.getWeatherString().map(w -> " <span class=\"weather\">" + w + "</span>").orElse(""));
+                + entry.getWeatherString().map(w -> " <span class=\"" + weatherStyleNames + "\">" + w + "</span>")
+                .orElse(""));
         name.setContentMode(ContentMode.HTML);
         name.addStyleName("name-and-weather");
         name.setWidth(100, Unit.PERCENTAGE);

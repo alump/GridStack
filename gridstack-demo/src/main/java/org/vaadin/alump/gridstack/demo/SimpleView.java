@@ -1,6 +1,7 @@
 package org.vaadin.alump.gridstack.demo;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -33,6 +34,7 @@ public class SimpleView extends AbstractView {
 
     public final static String VIEW_NAME = "simple";
     private GridStackLayout gridStack;
+    private CssLayout weathersLayout;
 
     private AtomicInteger childCounter = new AtomicInteger(0);
 
@@ -44,8 +46,9 @@ public class SimpleView extends AbstractView {
         Button menu = new Button(VaadinIcons.MENU);
         menu.addClickListener(e -> navigateTo(MenuView.VIEW_NAME));
         header.addComponent(menu);
-        header.addComponent(new Label("This is simple demo of GridStack add-on"));
+        header.addComponent(new Label("This is simple demo of GridStack add-on with paper styling"));
         addComponent(header);
+        setComponentAlignment(header, Alignment.BOTTOM_LEFT);
 
         gridStack = new GridStackLayout(3);
         GridStackStyling.applyPapers(gridStack);
@@ -78,12 +81,15 @@ public class SimpleView extends AbstractView {
                 try {
                     while (iterator.hasNext()) {
                         Thread.sleep(2000);
-                        container.getUI().access(() -> {
-                            container.addComponent(new WeatherPresentation(iterator.next()));
-                        });
+                        if(container.isAttached()) {
+                            container.getUI().access(() -> {
+                                container.addComponent(new WeatherPresentation(iterator.next()));
+                            });
+                        } else {
+                            break;
+                        }
                     }
                 } catch(InterruptedException e) {
-
                 }
             });
         } catch(IOException e) {
@@ -120,6 +126,7 @@ public class SimpleView extends AbstractView {
         // Because paper styling, this trick is needed to make things scrollable again. As making the component itself
         // to scroll it will break paper look and feel styling.
         CssLayout scrollWrapper = new CssLayout();
+        scrollWrapper.addStyleName("weather-list");
         scrollWrapper.setWidth(100, Unit.PERCENTAGE);
         Panel makeScrollable = new Panel(scrollWrapper);
         makeScrollable.setSizeFull();
@@ -132,11 +139,11 @@ public class SimpleView extends AbstractView {
         scrollWrapper.addComponent(loading);
 
         ProgressBar progressBar = new ProgressBar();
+        progressBar.addStyleName("loading-weather");
         progressBar.setIndeterminate(true);
         scrollWrapper.addComponent(progressBar);
 
-        Thread thread = new Thread(() -> this.delayedWeatherReader(scrollWrapper));
-        thread.start();
+        weathersLayout = scrollWrapper;
 
         return wrapper;
     }
@@ -204,6 +211,15 @@ public class SimpleView extends AbstractView {
 
         gridStack.iterator().forEachRemaining(c -> gridStack.setWrapperScrolling(c, false));
 
+    }
+
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        super.enter(event);
+        if(weathersLayout != null) {
+            Thread thread = new Thread(() -> this.delayedWeatherReader(weathersLayout));
+            thread.start();
+        }
     }
 
 }
