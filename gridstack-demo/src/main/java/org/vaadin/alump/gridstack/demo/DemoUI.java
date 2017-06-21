@@ -1,15 +1,11 @@
 package org.vaadin.alump.gridstack.demo;
 
-import com.vaadin.annotations.Push;
+import com.vaadin.annotations.*;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
 
 import javax.servlet.annotation.WebServlet;
-
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.annotations.VaadinServletConfiguration;
 
 @Theme("demo")
 @Title("GridStack Add-on Demo")
@@ -33,7 +29,7 @@ public class DemoUI extends UI {
         navigator.addView(MenuView.VIEW_NAME, MenuView.class);
         navigator.addView(TestView.VIEW_NAME, TestView.class);
         navigator.addView(SplitView.VIEW_NAME, SplitView.class);
-        navigator.addView(SimpleView.VIEW_NAME, new SimpleView());
+        navigator.addView(SimpleView.VIEW_NAME, SimpleView.class);
     }
 
 }
