@@ -7,10 +7,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.alump.gridstack.GridStackLayout;
 import org.vaadin.alump.gridstack.GridStackStyling;
-import org.vaadin.alump.gridstack.demo.openweathermap.CityID;
-import org.vaadin.alump.gridstack.demo.openweathermap.OpenWeatherMapEntry;
-import org.vaadin.alump.gridstack.demo.openweathermap.OpenWeatherMapQuery;
-import org.vaadin.alump.gridstack.demo.openweathermap.WeatherPresentation;
+import org.vaadin.alump.gridstack.demo.openweathermap.*;
 import org.vaadin.alump.scaleimage.ScaleImage;
 
 import java.io.IOException;
@@ -74,14 +71,14 @@ public class SimpleView extends AbstractView {
                 Iterator<OpenWeatherMapEntry> iterator = r.getWeathers().iterator();
                 container.getUI().access(() -> {
                     container.removeAllComponents();
-                    if(iterator.hasNext()) {
+                    if (iterator.hasNext()) {
                         container.addComponent(new WeatherPresentation(iterator.next()));
                     }
                 });
                 try {
                     while (iterator.hasNext()) {
                         Thread.sleep(2000);
-                        if(container.isAttached()) {
+                        if (container.isAttached()) {
                             container.getUI().access(() -> {
                                 container.addComponent(new WeatherPresentation(iterator.next()));
                             });
@@ -89,14 +86,21 @@ public class SimpleView extends AbstractView {
                             break;
                         }
                     }
-                } catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                 }
             });
-        } catch(IOException e) {
+        } catch(AppIdMissingException | IOException e) {
             e.printStackTrace();
             container.getUI().access(() -> {
                 container.removeAllComponents();
-                Label error = new Label("Sorry, I failed to load content.");
+                Label error = new Label();
+                if(e instanceof AppIdMissingException) {
+                    error.setValue("Whoever compiled this, please define appid property");
+                } else if(e instanceof IOException) {
+                    error.setValue("Sorry, I failed to load content.");
+                } else {
+                    error.setValue("Something went really wrong :(");
+                }
                 error.addStyleName("error");
                 error.setWidth(100, Unit.PERCENTAGE);
                 container.addComponent(error);

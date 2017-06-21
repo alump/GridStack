@@ -65,9 +65,9 @@ public class OpenWeatherMapQuery {
 
     public void run(Collection<CityID> cities, OpenWeatherMapListener listener) throws IOException {
 
-        Optional<String> appid = readProperties().map(p -> (String)p.get("appid"));
+        Optional<String> appid = readProperties().map(p -> (String)p.get("appid")).filter(v -> !v.isEmpty());
         if(!appid.isPresent()) {
-            throw new RuntimeException("Failed to resolve appid, please define it to openweathermap.properties");
+            throw new AppIdMissingException();
         }
 
         HttpRequestFactory requestFactory =

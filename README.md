@@ -60,6 +60,9 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 
 ## Release notes
 
+### Version 0.4.2 (TBD)
+- Currently under development
+
 ### Version 0.4.1 (2017-06-21)
 - Add method to set style name for item wrapper
 - Alternative paper styling from Masonry add-on
