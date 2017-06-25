@@ -112,7 +112,7 @@ public class GridStackLayoutConnector extends AbstractLayoutConnector {
 	public void onStateChanged(StateChangeEvent event) {
 		super.onStateChanged(event);
 
-        Duration duration = new Duration();
+        //Duration duration = new Duration();
         clickEventHandler.handleEventHandlerRegistration();
 
         if(event.isInitialStateChange() || event.hasPropertyChanged("gridStackOptions")) {

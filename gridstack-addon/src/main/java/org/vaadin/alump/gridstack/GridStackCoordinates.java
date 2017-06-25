@@ -17,10 +17,12 @@
  */
 package org.vaadin.alump.gridstack;
 
+import java.io.Serializable;
+
 /**
  * Immutable class used to pass coordinates (x,y,width,height) of GridStackLayout
  */
-public class GridStackCoordinates {
+public class GridStackCoordinates implements Serializable {
     private final int x;
     private final int y;
     private final int width;

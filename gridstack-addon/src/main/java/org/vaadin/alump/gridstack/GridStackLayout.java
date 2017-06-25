@@ -34,17 +34,14 @@ import java.util.*;
  *
  * gridstack.js by Pavel Reznikov: http://troolee.github.io/gridstack.js/
  */
-@JavaScript({"jquery-1.11.3.min.js", "jquery-ui.min.js", "lodash.min.js", "gridstack.js", "gridstack.jQueryUI.js"})
+@JavaScript({"jquery-3.2.1.min.js", "jquery-ui.min.js", "lodash.min.js", "gridstack.js", "gridstack.jQueryUI.js"})
 public class GridStackLayout extends AbstractLayout implements LayoutEvents.LayoutClickNotifier {
 
-    public final static String INITIALIZING_STYLENAME = "gridstack-initializing";
+    protected final List<Component> components = new ArrayList<>();
 
-    protected final List<Component> components = new ArrayList<Component>();
+    private final List<GridStackMoveEvent.GridStackMoveListener> moveListeners = new ArrayList<>();
 
-    private final List<GridStackMoveEvent.GridStackMoveListener> moveListeners = new ArrayList<GridStackMoveEvent.GridStackMoveListener>();
-
-    private final List<GridStackReadyEvent.GridStackReadyListener> readyListeners =
-            new ArrayList<GridStackReadyEvent.GridStackReadyListener>();
+    private final List<GridStackReadyEvent.GridStackReadyListener> readyListeners = new ArrayList<>();
 
     private int readyCalls = 0;
 
@@ -84,11 +81,8 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         @Override
         public void onReady(int widthPx) {
             readyCalls++;
-            removeStyleName(INITIALIZING_STYLENAME);
             final GridStackReadyEvent event = new GridStackReadyEvent(GridStackLayout.this, readyCalls == 1, widthPx);
-            for (GridStackReadyEvent.GridStackReadyListener listener : readyListeners) {
-                listener.onGridStackReady(event);
-            }
+            readyListeners.forEach(l -> l.onGridStackReady(event));
         }
     };
 
@@ -97,7 +91,6 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     public GridStackLayout() {
         super();
-        addStyleName(INITIALIZING_STYLENAME);
         registerRpc(serverRpc, GridStackServerRpc.class);
     }
 

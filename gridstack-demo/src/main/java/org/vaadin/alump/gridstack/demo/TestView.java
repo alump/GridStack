@@ -69,10 +69,13 @@ public class TestView extends AbstractView {
         gridStackWrapper.setContent(gridStack);
         gridStack.setSizeFull();
 
-        gridStack.addComponent(new Label("This child can be dragged without handle. Please use separate handle "
-                + "(default mode) when you child component is, or has, an active Vaadin component."), 0, 0, 1, 3, false);
+        Label label = new Label("This child can be dragged without handle. Please use separate handle "
+                + "(default mode) when you child component is, or has, an active Vaadin component.");
+        label.setWidth(100, Unit.PERCENTAGE);
+        gridStack.addComponent(label, 0, 0, 1, 3, false);
 
         locked = new Label("This component can be \"locked\" (moving other children will not move this)");
+        locked.setWidth(100, Unit.PERCENTAGE);
         gridStack.addComponent(locked, 1, 0, 3, 1);
 
         gridStack.addComponent(createForm(), 0, 5, 2, 3, false);
@@ -201,6 +204,7 @@ public class TestView extends AbstractView {
         password.setCaption("Password:");
         layout.addComponent(password);
         Button login = new GridStackButton("Login", e-> Notification.show("Logged in?"));
+        login.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         login.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(login);
         layout.setComponentAlignment(login, Alignment.BOTTOM_RIGHT);

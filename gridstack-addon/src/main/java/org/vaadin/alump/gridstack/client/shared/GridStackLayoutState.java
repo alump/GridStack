@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class GridStackLayoutState extends AbstractLayoutState {
 
-    public Map<Connector, GridStackChildOptions> childOptions = new HashMap<Connector,GridStackChildOptions>();
+    public Map<Connector, GridStackChildOptions> childOptions = new HashMap<>();
 
     public GridStackOptions gridStackOptions = new GridStackOptions();
 }

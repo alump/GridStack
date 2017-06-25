@@ -18,14 +18,16 @@
 package org.vaadin.alump.gridstack;
 
 
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.ui.Component;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * Event thrown when child of GridStackLayout has moved and/or resized by user
  */
-public class GridStackMoveEvent {
+public class GridStackMoveEvent implements Serializable {
 
     private final GridStackLayout layout;
     private final Component movedChild;
@@ -33,7 +35,7 @@ public class GridStackMoveEvent {
     private final GridStackCoordinates newCoordinates;
 
 
-    public interface GridStackMoveListener {
+    public interface GridStackMoveListener extends SerializableEventListener {
         /**
          * Called when children of layout have been moved. All moves caused by single action are given in collection.
          * @param events Collection of events caused by user's actions

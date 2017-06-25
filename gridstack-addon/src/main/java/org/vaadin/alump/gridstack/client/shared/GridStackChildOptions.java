@@ -27,7 +27,6 @@ public class GridStackChildOptions implements Serializable {
     public int y = 0;
     public int width = 1;
     public int height = 1;
-    public boolean autoPosition = false;
     public Integer minWidth = null;
     public Integer minHeight = null;
     public Integer maxWidth = null;

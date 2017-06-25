@@ -1,12 +1,16 @@
 package org.vaadin.alump.gridstack;
 
+import com.vaadin.event.SerializableEventListener;
+
+import java.io.Serializable;
+
 /**
  * Event sent when GridStack implementation on client side is initialized and ready. Can use used to improve initial
  * start up performance.
  */
-public class GridStackReadyEvent {
+public class GridStackReadyEvent implements Serializable {
 
-    public interface GridStackReadyListener {
+    public interface GridStackReadyListener extends SerializableEventListener {
         void onGridStackReady(GridStackReadyEvent layout);
     }
 
