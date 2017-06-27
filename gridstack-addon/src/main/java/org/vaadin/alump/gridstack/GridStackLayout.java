@@ -39,8 +39,6 @@ import java.util.List;
 @JavaScript({"jquery-1.11.3.min.js", "jquery-ui.min.js", "lodash.min.js", "gridstack.js"})
 public class GridStackLayout extends AbstractLayout implements LayoutEvents.LayoutClickNotifier {
 
-    public final static String INITIALIZING_STYLENAME = "gridstack-initializing";
-
     protected final List<Component> components = new ArrayList<Component>();
 
     private final List<GridStackMoveEvent.GridStackMoveListener> moveListeners = new ArrayList<GridStackMoveEvent.GridStackMoveListener>();
@@ -86,7 +84,6 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         @Override
         public void onReady(int widthPx) {
             readyCalls++;
-            removeStyleName(INITIALIZING_STYLENAME);
             final GridStackReadyEvent event = new GridStackReadyEvent(GridStackLayout.this, readyCalls == 1, widthPx);
             for (GridStackReadyEvent.GridStackReadyListener listener : readyListeners) {
                 listener.onGridStackReady(event);
@@ -99,7 +96,6 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     public GridStackLayout() {
         super();
-        addStyleName(INITIALIZING_STYLENAME);
         registerRpc(serverRpc, GridStackServerRpc.class);
     }
 

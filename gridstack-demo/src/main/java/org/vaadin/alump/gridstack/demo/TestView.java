@@ -38,7 +38,7 @@ public class TestView extends VerticalLayout implements View {
     private final static int CLIENT_SELECTS = GridStackLayout.CLIENT_SIDE_SELECTS;
 
     public TestView() {
-
+        
         setStyleName("demoContentLayout");
         setSizeFull();
         setMargin(true);

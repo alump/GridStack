@@ -1,6 +1,7 @@
 package org.vaadin.alump.gridstack.demo;
 
 import com.ibm.icu.impl.CalendarAstronomer;
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.*;

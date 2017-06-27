@@ -48,6 +48,7 @@ public class GwtGridStack extends ComplexPanel {
 
     public final static long DISABLE_CLICK_AFTER_EVENT_MS = 100L;
 
+    public final static String INITIALIZING_STYLENAME = "gridstack-initializing";
     public final static String CONTENT_CLASSNAME = "grid-stack-item-content";
     public final static String DRAG_HANDLE_CLASSNAME = GridStackOptions.DRAG_HANDLE_CLASSNAME;
     public final static String DISABLE_SCROLLING_CLASSNAME = "disable-scrolling";
@@ -94,6 +95,7 @@ public class GwtGridStack extends ComplexPanel {
             return;
         }
 
+        addStyleName(INITIALIZING_STYLENAME);
         if(width != null) {
             getElement().setAttribute("data-gs-width", width.toString());
         }
@@ -104,6 +106,7 @@ public class GwtGridStack extends ComplexPanel {
         initializeGridStack(options);
         LOGGER.info("Initialize grid stack took " + duration.elapsedMillis());
         initialized = true;
+        removeStyleName(INITIALIZING_STYLENAME);
         for (GwtGridStackReadyListener readyListener : readyListeners) {
             readyListener.onReady();
         }
