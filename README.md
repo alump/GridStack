@@ -14,6 +14,13 @@ Try the add-on demo at http://app.siika.fi/GridStackDemo
 
 ## FAQ
 
+### Width of GridStackLayout has to be defined
+If you are experiencing issues with GridStackLayout, first check if it's width has been defined. Almost always correct
+way to do is to set it to relative 100%.
+```java
+gridstack.setWidth(100, Unit.PERCENTAGE);
+```
+
 ### More than 8 columns in GridStackLayout are not sized correctly
 As part of sizing is done in CSS, in case of more than 8 columns you must:
 
