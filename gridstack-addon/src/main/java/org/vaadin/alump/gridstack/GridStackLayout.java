@@ -294,7 +294,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         for(Connector connector : getState().childOptions.keySet()) {
             GridStackChildOptions info = getState().childOptions.get(connector);
             if(acceptInsideHit) {
-                if(x >= info.x && x < (info.x + info.width) && y >= info.y && y < (info.y + info.width)) {
+                if(x >= info.x && x < (info.x + info.width) && y >= info.y && y < (info.y + info.height)) {
                     return (Component) connector;
                 }
             } else {
