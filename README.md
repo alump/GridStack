@@ -70,6 +70,7 @@ Official releases of this add-on are available at Vaadin Directory. For Maven in
 ### Version 0.4.2 (TBD)
 - Mark listeners serializable
 - Upgrade gridstack.js to 1.0.0-dev and jQuery to 3.2.1
+- Code fix from https://github.com/olafj
 
 ### Version 0.4.1 (2017-06-21)
 - Add method to set style name for item wrapper
