@@ -1,3 +1,6 @@
+[![Published on Vaadin  Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/gridstack-add-on)
+[![Stars on Vaadin Directory](https://img.shields.io/vaadin-directory/star/gridstack-add-on.svg)](https://vaadin.com/directory/component/gridstack-add-on)
+
 # GridStack Add-on for Vaadin
 
 This add-on provides GridStackLayout layout component that uses [gridstack.js](https://github.com/troolee/gridstack.js) on client side.
