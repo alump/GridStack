@@ -34,7 +34,7 @@ import java.util.*;
  *
  * gridstack.js by Pavel Reznikov: http://troolee.github.io/gridstack.js/
  */
-@JavaScript({"jquery-3.2.1.min.js", "jquery-ui.min.js", "lodash.min.js", "gridstack.js", "gridstack.jQueryUI.js"})
+@JavaScript({"jquery-3.3.1.min.js", "jquery-ui.min.js", "lodash.min.js", "gridstack.js", "gridstack.jQueryUI.js"})
 public class GridStackLayout extends AbstractLayout implements LayoutEvents.LayoutClickNotifier {
 
     protected final List<Component> components = new ArrayList<>();
