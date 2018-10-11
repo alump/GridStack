@@ -95,7 +95,7 @@ public class TestView extends AbstractView {
 
         this.readOnly = new Label("This component can be set to read only (moving and resizing is disabled and moving children over will not move this)");
         this.readOnly.setWidth(100, Unit.PERCENTAGE);
-        this.gridStack.addComponent(this.readOnly, 1, 4, 3, 1);
+        this.gridStack.addComponent(this.readOnly, 0, 8, 3, 1);
 
         this.gridStack.addComponent(createForm(), 0, 5, 2, 3, false);
         this.gridStack.addComponent(createConsole(), 0, 3, 4, 2);
