@@ -40,13 +40,13 @@ public class TestView extends AbstractView {
 
     private GridStackLayout gridStack;
 
-    private final AtomicInteger eventCounter = new AtomicInteger(0);
-    private final AtomicInteger itemCounter = new AtomicInteger(0);
-    private final TextArea eventConsole = new TextArea();
+    private AtomicInteger eventCounter = new AtomicInteger(0);
+    private AtomicInteger itemCounter = new AtomicInteger(0);
+    private TextArea eventConsole = new TextArea();
 
-    private final Random rand = new Random(0xDEADBEEF);
+    private Random rand = new Random(0xDEADBEEF);
 
-    private final Component locked;
+    private Component locked;
     private final Component readOnly;
 
     // This value can be used as x and y when client side can pick the best slot
@@ -60,20 +60,20 @@ public class TestView extends AbstractView {
         setSpacing(true);
 
         // By default gridstack has three columns (and calls that only work before client side attachment)
-        this.gridStack = new GridStackLayout(8)
+        gridStack = new GridStackLayout(8)
                 .setVerticalMargin(12)
                 .setMinWidth(300)
                 .setAnimate(true);
 
         // See styles.scss of this demo project how to handle columns sizes on CSS size
-        this.gridStack.addStyleName("eight-column-grid-stack");
+        gridStack.addStyleName("eight-column-grid-stack");
 
         // One cell height is set to 80 pixels
-        this.gridStack.setCellHeight("80px");
+        gridStack.setCellHeight("80px");
 
         addComponent(createToolbar());
 
-        final Panel gridStackWrapper = new Panel();
+        Panel gridStackWrapper = new Panel();
         gridStackWrapper.addStyleName("gridstack-wrapper");
         gridStackWrapper.setSizeFull();
         addComponent(gridStackWrapper);
@@ -81,35 +81,35 @@ public class TestView extends AbstractView {
 
         // ----
 
-        gridStackWrapper.setContent(this.gridStack);
-        this.gridStack.setSizeFull();
+        gridStackWrapper.setContent(gridStack);
+        gridStack.setSizeFull();
 
-        final Label label = new Label("This child can be dragged without handle. Please use separate handle "
+        Label label = new Label("This child can be dragged without handle. Please use separate handle "
                 + "(default mode) when you child component is, or has, an active Vaadin component.");
         label.setWidth(100, Unit.PERCENTAGE);
-        this.gridStack.addComponent(label, 0, 0, 1, 3, false);
+        gridStack.addComponent(label, 0, 0, 1, 3, false);
 
-        this.locked = new Label("This component can be \"locked\" (moving other children will not move this)");
-        this.locked.setWidth(100, Unit.PERCENTAGE);
-        this.gridStack.addComponent(this.locked, 1, 0, 3, 1);
+        locked = new Label("This component can be \"locked\" (moving other children will not move this)");
+        locked.setWidth(100, Unit.PERCENTAGE);
+        gridStack.addComponent(locked, 1, 0, 3, 1);
 
         this.readOnly = new Label("This component can be set to read only (moving and resizing is disabled and moving children over will not move this)");
         this.readOnly.setWidth(100, Unit.PERCENTAGE);
         this.gridStack.addComponent(this.readOnly, 0, 8, 3, 1);
 
-        this.gridStack.addComponent(createForm(), 0, 5, 2, 3, false);
-        this.gridStack.addComponent(createConsole(), 0, 3, 4, 2);
+        gridStack.addComponent(createForm(), 0, 5, 2, 3, false);
+        gridStack.addComponent(createConsole(), 0, 3, 4, 2);
 
-        final Component image = createImage();
-        this.gridStack.addComponent(image, 2, 1, 3, 2);
-        this.gridStack.setWrapperScrolling(image, false);
-        this.gridStack.setComponentSizeLimits(image, 3, null, 2, null);
+        Component image = createImage();
+        gridStack.addComponent(image, 2, 1, 3, 2);
+        gridStack.setWrapperScrolling(image, false);
+        gridStack.setComponentSizeLimits(image, 3, null, 2, null);
 
-        this.gridStack.addGridStackMoveListener(events -> {
-            final int eventId = this.eventCounter.getAndIncrement();
+        gridStack.addGridStackMoveListener(events -> {
+            final int eventId = eventCounter.getAndIncrement();
             events.stream().forEach(event -> {
                 if(event.getMovedChild() instanceof TestItem) {
-                        final TestItem item = (TestItem) event.getMovedChild();
+                        TestItem item = (TestItem) event.getMovedChild();
                     item.setHeader(event.getNew());
                 }
                 addEvent("event #" + eventId + ": Moved from " + event.getOld().toString() + " to "
@@ -119,7 +119,7 @@ public class TestView extends AbstractView {
     }
 
     private Component createToolbar() {
-        final HorizontalLayout toolbar = new HorizontalLayout();
+        HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
 
         toolbar.addComponent(createButton(VaadinIcons.MENU, "Back to menu",
@@ -128,31 +128,31 @@ public class TestView extends AbstractView {
         toolbar.addComponent(new Label("GridStack Demo"));
 
         toolbar.addComponent(createButton(VaadinIcons.PLUS, "Add component", e -> {
-            final TestItem layout = new TestItem(this.itemCounter);
-            this.gridStack.addComponent(layout, CLIENT_SELECTS, CLIENT_SELECTS, 1 + this.rand.nextInt(3), 1);
-            layout.addRemoveClickListener(re -> this.gridStack.removeComponent(layout));
+            TestItem layout = new TestItem(itemCounter);
+            gridStack.addComponent(layout, CLIENT_SELECTS, CLIENT_SELECTS, 1 + rand.nextInt(3), 1);
+            layout.addRemoveClickListener(re -> gridStack.removeComponent(layout));
         }));
 
         toolbar.addComponent(createButton(VaadinIcons.TRASH, "Remove component", e -> {
-            if (this.gridStack.getComponentCount() < 1) {
+            if (gridStack.getComponentCount() < 1) {
                 Notification.show("Nothing to remove!");
                 return;
             }
-            final int index = this.rand.nextInt(this.gridStack.getComponentCount());
-            final Iterator<Component> iter = this.gridStack.iterator();
+            int index = rand.nextInt(gridStack.getComponentCount());
+            Iterator<Component> iter = gridStack.iterator();
             for(int i = 0; i < index; ++i) {
                 iter.next();
             }
-            this.gridStack.removeComponent(iter.next());
+            gridStack.removeComponent(iter.next());
         }));
 
-        final CheckBox layoutClicks = new CheckBox("Layout clicks");
+        CheckBox layoutClicks = new CheckBox("Layout clicks");
         layoutClicks.setDescription("Adds layout click listener to GridStackLayout");
         layoutClicks.addValueChangeListener(e -> {
             if(e.getValue()) {
-                this.gridStack.addLayoutClickListener(this.layoutClickListener);
+                gridStack.addLayoutClickListener(layoutClickListener);
             } else {
-                this.gridStack.removeLayoutClickListener(this.layoutClickListener);
+                gridStack.removeLayoutClickListener(layoutClickListener);
             }
         });
         toolbar.addComponent(layoutClicks);
@@ -162,17 +162,17 @@ public class TestView extends AbstractView {
 
         toolbar.addComponent(createButton(VaadinIcons.RANDOM, "Reorder all items to new order", e -> reorderAll()));
 
-        final CheckBox staticGrid = new CheckBox("Static");
+        CheckBox staticGrid = new CheckBox("Static");
         staticGrid.setDescription("If static, dragging and resizing are not allowed by user");
         staticGrid.addValueChangeListener(e -> {
-            this.gridStack.setStaticGrid(e.getValue());
+            gridStack.setStaticGrid(e.getValue());
         });
         toolbar.addComponent(staticGrid);
 
-        final CheckBox lockItem = new CheckBox("Lock child");
+        CheckBox lockItem = new CheckBox("Lock child");
         lockItem.setDescription("Define if item with text \"can be locked\" is locked or not");
         lockItem.addValueChangeListener(e -> {
-            this.gridStack.setComponentLocked(this.locked, e.getValue());
+            gridStack.setComponentLocked(locked, e.getValue());
         });
         toolbar.addComponent(lockItem);
 
@@ -186,12 +186,12 @@ public class TestView extends AbstractView {
         return toolbar;
     }
 
-    private void addEvent(final String message) {
-        this.eventConsole.setValue(message + "\r\n" + this.eventConsole.getValue());
+    private void addEvent(String message) {
+        eventConsole.setValue(message + "\r\n" + eventConsole.getValue());
     }
 
-    private Button createButton(final Resource icon, final String caption, final String description, final Button.ClickListener listener) {
-        final Button button = new Button();
+    private Button createButton(Resource icon, String caption, String description, Button.ClickListener listener) {
+        Button button = new Button();
         button.addStyleName(ValoTheme.BUTTON_SMALL);
         button.addClickListener(listener);
         if(icon != null) {
@@ -206,36 +206,35 @@ public class TestView extends AbstractView {
         return button;
     }
 
-    private Button createButton(final Resource icon, final String description, final Button.ClickListener listener) {
+    private Button createButton(Resource icon, String description, Button.ClickListener listener) {
         return createButton(icon, null, description, listener);
     }
 
-    private Button createButton(final String caption, final String description, final Button.ClickListener listener) {
+    private Button createButton(String caption, String description, Button.ClickListener listener) {
         return createButton(null, caption, description, listener);
     }
 
     private Component createForm() {
-        final VerticalLayout layout = new VerticalLayout();
+        VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
         layout.setWidth(100, Unit.PERCENTAGE);
-        final TextField username = new TextField();
+        TextField username = new TextField();
         username.setWidth(100, Unit.PERCENTAGE);
         username.addStyleName(ValoTheme.TEXTFIELD_SMALL);
         username.setCaption("Username:");
         layout.addComponent(username);
-        final PasswordField password = new PasswordField();
+        PasswordField password = new PasswordField();
         password.setWidth(100, Unit.PERCENTAGE);
         password.addStyleName(ValoTheme.TEXTFIELD_SMALL);
         password.setCaption("Password:");
         layout.addComponent(password);
-        final Button login = new GridStackButton("Login", e -> Notification.show("Logged in?"));
+        Button login = new GridStackButton("Login", e -> Notification.show("Logged in?"));
         login.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         login.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(login);
         layout.setComponentAlignment(login, Alignment.BOTTOM_RIGHT);
-        final Label info = new Label(
-                "Also this child can be dragged without handle. GridStackButton used to resolve event "
+        Label info = new Label("Also this child can be dragged without handle. GridStackButton used to resolve event "
                 + "issues caused by normal Button.");
         info.setWidth(100, Unit.PERCENTAGE);
         info.addStyleName("info-text");
@@ -244,22 +243,22 @@ public class TestView extends AbstractView {
     }
 
     private Component createConsole() {
-        final VerticalLayout layout = new VerticalLayout();
+        VerticalLayout layout = new VerticalLayout();
         layout.addStyleName("eventconsole-wrapper");
         layout.setSizeFull();
-        this.eventConsole.setCaption("Event console");
-        this.eventConsole.setSizeFull();
-        this.eventConsole.setValue("Events will be written here.");
-        layout.addComponent(this.eventConsole);
+        eventConsole.setCaption("Event console");
+        eventConsole.setSizeFull();
+        eventConsole.setValue("Events will be written here.");
+        layout.addComponent(eventConsole);
         return layout;
     }
 
     private Component createImage() {
-        final CssLayout wrapper = new CssLayout();
+        CssLayout wrapper = new CssLayout();
         wrapper.setSizeFull();
         wrapper.addStyleName("image-wrapper");
 
-        final Image image = new Image(null, new ThemeResource("images/rude.jpg"));
+        Image image = new Image(null, new ThemeResource("images/rude.jpg"));
         wrapper.addComponent(image);
         return wrapper;
     }
@@ -276,7 +275,7 @@ public class TestView extends AbstractView {
 
         if(clickedAtChild) {
             sb.append(": ");
-            sb.append(this.gridStack.getCoordinates(e.getChildComponent())
+            sb.append(gridStack.getCoordinates(e.getChildComponent())
                 .toString());
         }
 
@@ -285,26 +284,26 @@ public class TestView extends AbstractView {
 
     private void reorderAll() {
         addEvent("Reorder all components...");
-        GridStackDemoUtil.reorderAll(this.gridStack, this.rand, 8, 8);
+        GridStackDemoUtil.reorderAll(gridStack, rand, 8, 8);
     }
 
     private void moveRandomChildToAnotherFreePosition() {
-        final List<Component> children = new ArrayList<>();
-        this.gridStack.iterator()
+        List<Component> children = new ArrayList<>();
+        gridStack.iterator()
             .forEachRemaining(child -> children.add(child));
         if(!children.isEmpty()) {
             addEvent("Move random child to new position...");
-            Collections.shuffle(children, this.rand);
+            Collections.shuffle(children, rand);
             moveChildToAnotherFreePosition(children.get(0));
         }
     }
 
     // Just ugly hack to find suitable slot on server side. This will onlu work if server side has actual location of
     // child component
-    private void moveChildToAnotherFreePosition(final Component child) {
-        final Component movedComponent = GridStackDemoUtil.moveChildToAnotherFreePosition(this.gridStack, child, 8, 8);
+    private void moveChildToAnotherFreePosition(Component child) {
+        Component movedComponent = GridStackDemoUtil.moveChildToAnotherFreePosition(gridStack, child, 8, 8);
         if(movedComponent != null) {
-            final GridStackCoordinates coords = this.gridStack.getCoordinates(movedComponent);
+            GridStackCoordinates coords = gridStack.getCoordinates(movedComponent);
             addEvent("Moving child server side to new position x:" + coords.getX() + " y:" + coords.getY() + "...");
         } else {
             addEvent("!!! Failed to find new available position for child");

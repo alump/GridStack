@@ -59,22 +59,22 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     public final static int CLIENT_SIDE_SELECTS = -1;
 
-    private final GridStackServerRpc serverRpc = new GridStackServerRpc() {
+    private GridStackServerRpc serverRpc = new GridStackServerRpc() {
 
         @Override
-        public void layoutClick(final MouseEventDetails mouseEventDetails, final Connector connector) {
+        public void layoutClick(MouseEventDetails mouseEventDetails, Connector connector) {
             fireEvent(LayoutEvents.LayoutClickEvent.createEvent(GridStackLayout.this,
                     mouseEventDetails, connector));
         }
 
         @Override
-        public void onChildrenMoved(final List<GridStackMoveData> moves) {
-            final Collection<GridStackMoveEvent> events = new ArrayList<GridStackMoveEvent>();
-            for (final GridStackMoveData move : moves) {
-                final Component childComponent = (Component) move.child;
-                final GridStackCoordinates oldCoordinates = getCoordinates(childComponent);
+        public void onChildrenMoved(List<GridStackMoveData> moves) {
+            Collection<GridStackMoveEvent> events = new ArrayList<GridStackMoveEvent>();
+            for (GridStackMoveData move : moves) {
+                Component childComponent = (Component) move.child;
+                GridStackCoordinates oldCoordinates = getCoordinates(childComponent);
 
-                final GridStackChildOptions info = getState(false).childOptions.get(move.child);
+                GridStackChildOptions info = getState(false).childOptions.get(move.child);
                 info.x = move.x;
                 info.y = move.y;
                 info.width = move.width;
@@ -88,10 +88,10 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         }
 
         @Override
-        public void onReady(final int widthPx) {
-            GridStackLayout.this.readyCalls++;
-            final GridStackReadyEvent event = new GridStackReadyEvent(GridStackLayout.this, GridStackLayout.this.readyCalls == 1, widthPx);
-            GridStackLayout.this.readyListeners.forEach(l -> l.onGridStackReady(event));
+        public void onReady(int widthPx) {
+            readyCalls++;
+            final GridStackReadyEvent event = new GridStackReadyEvent(GridStackLayout.this, readyCalls == 1, widthPx);
+            readyListeners.forEach(l -> l.onGridStackReady(event));
         }
     };
 
@@ -100,14 +100,14 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     public GridStackLayout() {
         super();
-        registerRpc(this.serverRpc, GridStackServerRpc.class);
+        registerRpc(serverRpc, GridStackServerRpc.class);
     }
 
     /**
      * Create GridStackLayout with defined column count.
      * @param columns Number of columns, if more than 8 see documentation (extra SCSS including required)
      */
-    public GridStackLayout(final int columns) {
+    public GridStackLayout(int columns) {
         this();
         if(columns <= 0) {
             throw new IllegalArgumentException("Amount of columns can not be 0 or negative");
@@ -121,7 +121,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param columns Number of columns, if more than 8 see documentation (extra SCSS including required)
      * @param rows Maxium amount of rows allowed
      */
-    public GridStackLayout(final int columns, final int rows) {
+    public GridStackLayout(int columns, int rows) {
         this(columns);
         if(rows <= 0) {
             throw new IllegalArgumentException("Amount of rows can not be 0 or negative");
@@ -135,7 +135,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
     }
 
     @Override
-    protected GridStackLayoutState getState(final boolean markDirty) {
+    protected GridStackLayoutState getState(boolean markDirty) {
         return (GridStackLayoutState)super.getState(markDirty);
     }
 
@@ -143,7 +143,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * {@inheritDoc}
      */
     @Override
-    public void addComponent(final Component component) {
+    public void addComponent(Component component) {
         addComponent(component, CLIENT_SIDE_SELECTS, CLIENT_SIDE_SELECTS);
     }
 
@@ -154,7 +154,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      *                      drag handle. Notice that using a separate drag handle is recommended if you component
      *                      is or contains any active components (buttons etc..)
      */
-    public void addComponent(final Component component, final boolean useDragHandle) {
+    public void addComponent(Component component, boolean useDragHandle) {
         addComponent(component, CLIENT_SIDE_SELECTS, CLIENT_SIDE_SELECTS, useDragHandle);
     }
 
@@ -164,7 +164,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param x Slot's X coordinate
      * @param y Slot's Y coordinate
      */
-    public void addComponent(final Component component, final int x, final int y) {
+    public void addComponent(Component component, int x, int y) {
         addComponent(component, x, y, 1, 1);
     }
 
@@ -177,7 +177,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      *                      drag handle. Notice that using a separate drag handle is recommended if you component
      *                      is or contains any active components (buttons etc..)
      */
-    public void addComponent(final Component component, final int x, final int y, final boolean useDragHandle) {
+    public void addComponent(Component component, int x, int y, boolean useDragHandle) {
         addComponent(component, x, y, 1, 1, useDragHandle);
     }
 
@@ -189,7 +189,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param width Width of space reserved (in slots)
      * @param height Height of space reserved (in slots)
      */
-    public void addComponent(final Component component, final int x, final int y, final int width, final int height) {
+    public void addComponent(Component component, int x, int y, int width, int height) {
         addComponent(component, x, y, width, height, true);
     }
 
@@ -204,11 +204,11 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      *                      drag handle. Notice that using a separate drag handle is recommended if you component
      *                      is or contains any active components (buttons etc..)
      */
-    public void addComponent(final Component component, final int x, final int y, final int width, final int height, final boolean useDragHandle) {
+    public void addComponent(Component component, int x, int y, int width, int height, boolean useDragHandle) {
         super.addComponent(component);
-        this.components.add(component);
+        components.add(component);
 
-        final GridStackChildOptions info = new GridStackChildOptions();
+        GridStackChildOptions info = new GridStackChildOptions();
         info.x = x;
         info.y = y;
         info.width = width;
@@ -221,7 +221,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * Reset component's position and allow child side define new position for it.
      * @param component Child component which position is reset
      */
-    public void resetComponentPosition(final Component component) {
+    public void resetComponentPosition(Component component) {
         moveComponent(component, CLIENT_SIDE_SELECTS, CLIENT_SIDE_SELECTS);
     }
 
@@ -232,7 +232,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param y When defined component's Y value is updated, if null old value is kept
      * @throws IllegalArgumentException If given value are invalid (eg. component is not child of this layout)
      */
-    public void moveComponent(final Component component, final Integer x, final Integer y) throws IllegalArgumentException {
+    public void moveComponent(Component component, Integer x, Integer y) throws IllegalArgumentException {
         moveAndResizeComponent(component, x, y, null, null);
     }
 
@@ -243,7 +243,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param height When defined component's height is updated, if null old value is kept
      * @throws IllegalArgumentException If given value are invalid (eg. component is not child of this layout)
      */
-    public void resizeComponent(final Component component, final Integer width, final Integer height) throws IllegalArgumentException {
+    public void resizeComponent(Component component, Integer width, Integer height) throws IllegalArgumentException {
         moveAndResizeComponent(component, null, null, width, height);
     }
 
@@ -257,14 +257,14 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @throws IllegalArgumentException If given value are invalid (eg. component is not child of this layout, or
      * coordinates are invalid).
      */
-    public void moveAndResizeComponent(final Component component, final Integer x, final Integer y, final Integer width, final Integer height)
+    public void moveAndResizeComponent(Component component, Integer x, Integer y, Integer width, Integer height)
             throws IllegalArgumentException {
 
         if(x != null & width != null && x >= 0 && x + width > getState(false).gridStackOptions.width) {
             throw new IllegalArgumentException("Component would go outside the right edge of layout");
         }
 
-        final GridStackChildOptions info = getState().childOptions.get(component);
+        GridStackChildOptions info = getState().childOptions.get(component);
         if(info == null) {
             throw new IllegalArgumentException("Given component is not child of GridStackLayout");
         }
@@ -288,7 +288,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param y Slot's Y coordinate
      * @return Component at slot, or null if component not found
      */
-    public Component getComponent(final int x, final int y) {
+    public Component getComponent(int x, int y) {
         return getComponent(x, y, false);
     }
 
@@ -299,9 +299,9 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param acceptInsideHit If true also other slots reserved by component are accepted
      * @return Component at slot, or null if component not found
      */
-    public Component getComponent(final int x, final int y, final boolean acceptInsideHit) {
-        for (final Connector connector : getState().childOptions.keySet()) {
-            final GridStackChildOptions info = getState().childOptions.get(connector);
+    public Component getComponent(int x, int y, boolean acceptInsideHit) {
+        for (Connector connector : getState().childOptions.keySet()) {
+            GridStackChildOptions info = getState().childOptions.get(connector);
             if(acceptInsideHit) {
                 if(x >= info.x && x < (info.x + info.width) && y >= info.y && y < (info.y + info.height)) {
                     return (Component) connector;
@@ -319,21 +319,21 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * {@inheritDoc}
      */
     @Override
-    public void removeComponent(final Component component) {
+    public void removeComponent(Component component) {
         getState().childOptions.remove(component);
-        this.components.remove(component);
+        components.remove(component);
         super.removeComponent(component);
     }
 
     @Override
-    public void replaceComponent(final Component oldComponent, final Component newComponent) {
+    public void replaceComponent(Component oldComponent, Component newComponent) {
         if(oldComponent == newComponent) {
             return;
         }
         if(oldComponent.getParent() != this) {
             throw new IllegalArgumentException("Replacable component not child of this layout");
         }
-        final GridStackChildOptions oldOptions = getState(false).childOptions.get(oldComponent);
+        GridStackChildOptions oldOptions = getState(false).childOptions.get(oldComponent);
         removeComponent(oldComponent);
 
         if(newComponent.getParent() == this) {
@@ -347,7 +347,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     @Override
     public int getComponentCount() {
-        return this.components.size();
+        return components.size();
     }
 
     /**
@@ -355,14 +355,14 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      */
     @Override
     public Iterator<Component> iterator() {
-        return this.components.iterator();
+        return components.iterator();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Registration addLayoutClickListener(final LayoutEvents.LayoutClickListener listener) {
+    public Registration addLayoutClickListener(LayoutEvents.LayoutClickListener listener) {
         return addListener(EventId.LAYOUT_CLICK_EVENT_IDENTIFIER,
                 LayoutEvents.LayoutClickEvent.class, listener,
                 LayoutEvents.LayoutClickListener.clickMethod);
@@ -372,7 +372,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * {@inheritDoc}
      */
     @Override
-    public void removeLayoutClickListener(final LayoutEvents.LayoutClickListener listener) {
+    public void removeLayoutClickListener(LayoutEvents.LayoutClickListener listener) {
         removeListener(EventId.LAYOUT_CLICK_EVENT_IDENTIFIER,
                 LayoutEvents.LayoutClickEvent.class, listener);
     }
@@ -381,32 +381,32 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * Add listener for component move events
      * @param listener Listener added
      */
-    public void addGridStackMoveListener(final GridStackMoveEvent.GridStackMoveListener listener) {
-        this.moveListeners.add(listener);
+    public void addGridStackMoveListener(GridStackMoveEvent.GridStackMoveListener listener) {
+        moveListeners.add(listener);
     }
 
     /**
      * Remove listener of component move events
      * @param listener Listener removed
      */
-    public void removeGridStackMoveListener(final GridStackMoveEvent.GridStackMoveListener listener) {
-        this.moveListeners.remove(listener);
+    public void removeGridStackMoveListener(GridStackMoveEvent.GridStackMoveListener listener) {
+        moveListeners.remove(listener);
     }
 
     /**
      * Add listener for gridstack ready event
      * @param listener Listener added
      */
-    public void addGridStackReadyListener(final GridStackReadyEvent.GridStackReadyListener listener) {
-        this.readyListeners.add(listener);
+    public void addGridStackReadyListener(GridStackReadyEvent.GridStackReadyListener listener) {
+        readyListeners.add(listener);
     }
 
     /**
      * Remove listener of GridStack ready event
      * @param listener Listener removed
      */
-    public void removeGridStackReadyListener(final GridStackReadyEvent.GridStackReadyListener listener) {
-        this.readyListeners.remove(listener);
+    public void removeGridStackReadyListener(GridStackReadyEvent.GridStackReadyListener listener) {
+        readyListeners.remove(listener);
     }
 
     /**
@@ -415,22 +415,22 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @return Coordinates (X,Y,width,height) of component
      * @throws IllegalArgumentException If child not found
      */
-    public GridStackCoordinates getCoordinates(final Component child) {
-        final GridStackChildOptions opts = getComponentOptions(child, false);
+    public GridStackCoordinates getCoordinates(Component child) {
+        GridStackChildOptions opts = getComponentOptions(child, false);
         return new GridStackCoordinates(opts.x, opts.y, opts.width, opts.height);
     }
 
-    protected GridStackMoveEvent createMoveEvent(final Component component, final GridStackCoordinates oldCoordinates) {
+    protected GridStackMoveEvent createMoveEvent(Component component, GridStackCoordinates oldCoordinates) {
         return new GridStackMoveEvent(this, component, oldCoordinates,
                 getCoordinates(component));
     }
 
-    protected void fireMoveEvents(final Collection<GridStackMoveEvent> events) {
+    protected void fireMoveEvents(Collection<GridStackMoveEvent> events) {
         if(events.isEmpty()) {
             return;
         }
 
-        for (final GridStackMoveEvent.GridStackMoveListener listener : this.moveListeners) {
+        for (GridStackMoveEvent.GridStackMoveListener listener : moveListeners) {
             listener.onGridStackMove(events);
         }
     }
@@ -444,9 +444,8 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param minHeight Mininum height in slots (null is undefined)
      * @param maxHeight Maximum height in slots (null is undefined)
      */
-    public void setComponentSizeLimits(final Component child, final Integer minWidth, final Integer maxWidth, final Integer minHeight,
-            final Integer maxHeight) {
-        final GridStackChildOptions childOpts = getComponentOptions(child);
+    public void setComponentSizeLimits(Component child, Integer minWidth, Integer maxWidth, Integer minHeight, Integer maxHeight) {
+        GridStackChildOptions childOpts = getComponentOptions(child);
         childOpts.minWidth = minWidth;
         childOpts.maxWidth = maxWidth;
         childOpts.minHeight = minHeight;
@@ -459,7 +458,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @return true if locked, false if not
      * @throws IllegalArgumentException If child not found
      */
-    public boolean isComponentLocked(final Component child) {
+    public boolean isComponentLocked(Component child) {
         return getComponentOptions(child, false).locked;
     }
 
@@ -469,23 +468,23 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param locked true if locked, false if not
      * @throws IllegalArgumentException If child not found
      */
-    public void setComponentLocked(final Component child, final boolean locked) {
+    public void setComponentLocked(Component child, boolean locked) {
         getComponentOptions(child).locked = locked;
     }
 
-    protected GridStackChildOptions getComponentOptions(final Component child) {
+    protected GridStackChildOptions getComponentOptions(Component child) {
         return getComponentOptions(child, true, true);
     }
 
-    protected GridStackChildOptions getComponentOptions(final Component child, final boolean modify) {
+    protected GridStackChildOptions getComponentOptions(Component child, boolean modify) {
         return getComponentOptions(child, modify, true);
     }
 
-    protected GridStackChildOptions getComponentOptions(final Component child, final boolean modify, final boolean throwIfMissing) {
+    protected GridStackChildOptions getComponentOptions(Component child, boolean modify, boolean throwIfMissing) {
         if(child == null || child.getParent() != this) {
             throw new IllegalArgumentException("Given component is not child of this layout");
         }
-        final GridStackChildOptions opt = getState(modify).childOptions.get(child);
+        GridStackChildOptions opt = getState(modify).childOptions.get(child);
         if(opt == null) {
             throw new IllegalStateException("Missing child options");
         }
@@ -497,7 +496,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param animate true to animate, false to not animate
      * @return This GridStackLayout for command chaining
      */
-    public GridStackLayout setAnimate(final boolean animate) {
+    public GridStackLayout setAnimate(boolean animate) {
         getState().gridStackOptions.animate = animate;
         return this;
     }
@@ -516,7 +515,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      *                   allowed)
      * @return This GridStackLayout for command chaining
      */
-    public GridStackLayout setStaticGrid(final boolean staticGrid) {
+    public GridStackLayout setStaticGrid(boolean staticGrid) {
         getState().gridStackOptions.staticGrid = staticGrid;
         return this;
     }
@@ -535,7 +534,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param child Child component of layout
      * @return true if component has separate dragging handle, false if whole content acts as dragging handle
      */
-    public boolean isComponentWithDragHandle(final Component child) {
+    public boolean isComponentWithDragHandle(Component child) {
         return getComponentOptions(child, false).useDragHandle;
     }
 
@@ -545,7 +544,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param marginPx Vertical margin in pixels
      * @return This GridStackLayout for command chaining
      */
-    public GridStackLayout setVerticalMargin(final int marginPx) {
+    public GridStackLayout setVerticalMargin(int marginPx) {
         return setVerticalMargin(marginPx + "px");
     }
 
@@ -555,7 +554,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param margin Vertical margin in CSS units (eg. '10px' or '3em')
      * @return This GridStackLayout for command chaining
      */
-    public GridStackLayout setVerticalMargin(final String margin) {
+    public GridStackLayout setVerticalMargin(String margin) {
         getState(true).gridStackOptions.verticalMargin = margin;
         return this;
     }
@@ -574,7 +573,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param heightPx Cell height in pixels
      * @return This GridStackLayout for command chaining
      */
-    public GridStackLayout setCellHeight(final Integer heightPx) {
+    public GridStackLayout setCellHeight(Integer heightPx) {
         return setCellHeight(Objects.requireNonNull(heightPx) + "px");
     }
 
@@ -583,7 +582,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param height Cell height in CSS units
      * @return This GridStackLayout for command chaining
      */
-    public GridStackLayout setCellHeight(final String height) {
+    public GridStackLayout setCellHeight(String height) {
         getState(true).gridStackOptions.cellHeight = height;
         return this;
     }
@@ -602,7 +601,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param minWidthPx Minimal width in pixels
      * @return This GridStackLayout for command chaining
      */
-    public GridStackLayout setMinWidth(final int minWidthPx) {
+    public GridStackLayout setMinWidth(int minWidthPx) {
         getState(true).gridStackOptions.minWidth = minWidthPx;
         return this;
     }
@@ -622,7 +621,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param scrolling true to enable vertical scrolling, false to disable it
      * @throws IllegalArgumentException If child not found
      */
-    public void setWrapperScrolling(final Component child, final boolean scrolling) {
+    public void setWrapperScrolling(Component child, boolean scrolling) {
         getComponentOptions(child, true).disableScrolling = !scrolling;
     }
 
@@ -632,7 +631,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @return true if wrapper allows vertical scrolling, false if wrapper hides vertical overflow
      * @throws IllegalArgumentException If child not found
      */
-    public boolean isWrapperScrolling(final Component child) {
+    public boolean isWrapperScrolling(Component child) {
         return getComponentOptions(child, false).disableScrolling;
     }
 
@@ -646,7 +645,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @return true if area is available and valid for use
      * @throws IllegalArgumentException If invalid values given
      */
-    public boolean isAreaEmpty(final int x, final int y, final int width, final int height) throws IllegalArgumentException {
+    public boolean isAreaEmpty(int x, int y, int width, int height) throws IllegalArgumentException {
         return isAreaEmpty(new GridStackCoordinates(x, y, width, height));
     }
 
@@ -658,7 +657,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @return true if area is available and valid for use
      * @throws IllegalArgumentException If invalid values given
      */
-    public boolean isAreaEmpty(final GridStackCoordinates coordinates) throws IllegalArgumentException {
+    public boolean isAreaEmpty(GridStackCoordinates coordinates) throws IllegalArgumentException {
         if(coordinates.getX() < 0) {
             throw new IllegalArgumentException("X can not be negative");
         }
@@ -679,7 +678,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
 
         for(int dx = 0; dx < coordinates.getWidth(); ++dx) {
             for(int dy = 0; dy < coordinates.getHeight(); ++dy) {
-                final Component occupant = getComponent(coordinates.getX() + dx, coordinates.getY() + dy, true);
+                Component occupant = getComponent(coordinates.getX() + dx, coordinates.getY() + dy, true);
                 if(occupant != null) {
                     return false;
                 }
@@ -696,8 +695,8 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param child Child component
      * @param styleName Style name applied to item wrapper
      */
-    public void setChildItemStyleName(final Component child, final String styleName) {
-        final GridStackChildOptions childOptions = getState().childOptions.get(child);
+    public void setChildItemStyleName(Component child, String styleName) {
+        GridStackChildOptions childOptions = getState().childOptions.get(child);
         if(childOptions == null) {
             throw new IllegalArgumentException("Child not found");
         }
@@ -709,7 +708,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @param child Child component
      * @return Style name applied
      */
-    public Optional<String> getChildItemStyleName(final Component child) {
+    public Optional<String> getChildItemStyleName(Component child) {
         return Optional.ofNullable(getState(false).childOptions.get(child))
                 .flatMap(o -> Optional.ofNullable(o.styleName));
     }
