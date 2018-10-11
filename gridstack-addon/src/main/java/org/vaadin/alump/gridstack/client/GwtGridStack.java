@@ -362,6 +362,7 @@ public class GwtGridStack extends ComplexPanel {
         updateWidgetWrapper(wrapper, options.x, options.y, options.width, options.height);
         updateWidgetSizeLimits(wrapper, GwtGridSizeLimits.create(options));
         setLocked(wrapper, options.locked);
+        setReadOnly(wrapper, options.readOnly);
 
         if(options.disableScrolling) {
             wrapper.addClassName(DISABLE_SCROLLING_CLASSNAME);
