@@ -183,6 +183,12 @@ public class GwtGridStack extends ComplexPanel {
             wrapper.setAttribute("data-gs-locked", "yes");
         }
 
+        if (info.readOnly) {
+            wrapper.setAttribute("data-gs-locked", "yes");
+            wrapper.setAttribute("data-gs-no-resize", "yes");
+            wrapper.setAttribute("data-gs-no-move", "yes");
+        }
+
         final Element content = Document.get()
             .createDivElement();
         content.addClassName(CONTENT_CLASSNAME);
@@ -201,7 +207,7 @@ public class GwtGridStack extends ComplexPanel {
 
         wrapper.appendChild(content);
 
-        if (info.useDragHandle && !info.readOnly) {
+        if (info.useDragHandle) {
             final Element dragHandle = Document.get()
                 .createDivElement();
             dragHandle.addClassName("separate-handle");
@@ -364,7 +370,7 @@ public class GwtGridStack extends ComplexPanel {
         setLocked(wrapper, options.locked);
         setReadOnly(wrapper, options.readOnly);
 
-        if(options.disableScrolling) {
+        if (options.disableScrolling) {
             wrapper.addClassName(DISABLE_SCROLLING_CLASSNAME);
         } else {
             wrapper.removeClassName(DISABLE_SCROLLING_CLASSNAME);
