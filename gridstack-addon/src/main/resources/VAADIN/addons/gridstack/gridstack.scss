@@ -170,6 +170,10 @@ $gridstack_item_padding: $gridstack_horizontal_padding / 2 !default;
         }
       }
 
+      &.ui-draggable-disabled .grid-stack-item-drag-handle.separate-handle {
+      display: none !important;
+      }
+
       &:hover .grid-stack-item-drag-handle.separate-handle {
         display: block;
       }

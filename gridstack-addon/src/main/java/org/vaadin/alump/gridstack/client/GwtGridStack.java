@@ -17,6 +17,17 @@
  */
 package org.vaadin.alump.gridstack.client;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
+import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
+
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -24,11 +35,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
-import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
-
-import java.util.*;
-import java.util.logging.Logger;
 
 public class GwtGridStack extends ComplexPanel {
 
@@ -170,7 +176,14 @@ public class GwtGridStack extends ComplexPanel {
             wrapper.setAttribute("data-gs-locked", "yes");
         }
 
-        Element content = Document.get().createDivElement();
+        if (info.readOnly) {
+            wrapper.setAttribute("data-gs-locked", "yes");
+            wrapper.setAttribute("data-gs-no-resize", "yes");
+            wrapper.setAttribute("data-gs-no-move", "yes");
+        }
+
+        final Element content = Document.get()
+            .createDivElement();
         content.addClassName(CONTENT_CLASSNAME);
 
         if(!info.useDragHandle) {
@@ -341,6 +354,7 @@ public class GwtGridStack extends ComplexPanel {
         updateWidgetWrapper(wrapper, options.x, options.y, options.width, options.height);
         updateWidgetSizeLimits(wrapper, GwtGridSizeLimits.create(options));
         setLocked(wrapper, options.locked);
+        setReadOnly(wrapper, options.readOnly);
 
         if(options.disableScrolling) {
             wrapper.addClassName(DISABLE_SCROLLING_CLASSNAME);
@@ -383,6 +397,16 @@ public class GwtGridStack extends ComplexPanel {
         });
     }-*/;
 
+    protected native final void setReadOnly(Element element, boolean readOnly)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.locked(element, readOnly);
+            grid.resizable(element, !readOnly);
+            grid.movable(element, !readOnly);
+        });
+    }-*/;
 
     public void commit() {
         if(initialized && isAttached()) {
