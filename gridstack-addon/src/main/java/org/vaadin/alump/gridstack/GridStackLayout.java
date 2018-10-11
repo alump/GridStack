@@ -17,6 +17,16 @@
  */
 package org.vaadin.alump.gridstack;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
+import org.vaadin.alump.gridstack.client.shared.GridStackLayoutState;
+import org.vaadin.alump.gridstack.client.shared.GridStackMoveData;
+import org.vaadin.alump.gridstack.client.shared.GridStackServerRpc;
+
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.shared.Connector;
@@ -24,12 +34,6 @@ import com.vaadin.shared.EventId;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
-import org.vaadin.alump.gridstack.client.shared.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Vaadin layout using gridstack.js library to layout components
@@ -64,8 +68,8 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         @Override
         public void onChildrenMoved(List<GridStackMoveData> moves) {
             Collection<GridStackMoveEvent> events = new ArrayList<GridStackMoveEvent>();
-            for(GridStackMoveData move : moves) {
-                Component childComponent = (Component)move.child;
+            for (GridStackMoveData move : moves) {
+                Component childComponent = (Component) move.child;
                 GridStackCoordinates oldCoordinates = getCoordinates(childComponent);
 
                 GridStackChildOptions info = getState(false).childOptions.get(move.child);
@@ -296,7 +300,7 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
      * @return Component at slot, or null if component not found
      */
     public Component getComponent(int x, int y, boolean acceptInsideHit) {
-        for(Connector connector : getState().childOptions.keySet()) {
+        for (Connector connector : getState().childOptions.keySet()) {
             GridStackChildOptions info = getState().childOptions.get(connector);
             if(acceptInsideHit) {
                 if(x >= info.x && x < (info.x + info.width) && y >= info.y && y < (info.y + info.width)) {
@@ -675,6 +679,26 @@ public class GridStackLayout extends AbstractLayout implements LayoutEvents.Layo
         }
 
         return true;
+    }
+
+    /**
+     * Sets read only state to child component. If the child is set to read only it will not be able to be moved, resized or moved by another component
+     *
+     * @param child - Child component
+     * @param readOnly - State of the component
+     */
+    public void setComponentReadOnly(Component child, boolean readOnly) {
+        getComponentOptions(child).readOnly = readOnly;
+    }
+
+    /**
+     * Check if the child component is in read only state
+     *
+     * @param child - Child component
+     * @return true if the component is in read only state
+     */
+    public boolean isComponentReadOnly(Component child) {
+        return getComponentOptions(child).readOnly;
     }
 
 }
