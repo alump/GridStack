@@ -17,6 +17,17 @@
  */
 package org.vaadin.alump.gridstack.client;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
+import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
+
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -24,11 +35,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.vaadin.alump.gridstack.client.shared.GridStackChildOptions;
-import org.vaadin.alump.gridstack.client.shared.GridStackOptions;
-
-import java.util.*;
-import java.util.logging.Logger;
 
 public class GwtGridStack extends ComplexPanel {
 
@@ -78,7 +84,7 @@ public class GwtGridStack extends ComplexPanel {
     }
 
     public void setOptions(Integer width, Integer height, GridStackOptions options) {
-        if(!initialized) {
+        if (!initialized) {
             initialize(width, height, GwtGridStackOptions.createFrom(options));
         } else {
             if(options.cellHeight != null) {
@@ -91,7 +97,7 @@ public class GwtGridStack extends ComplexPanel {
     }
 
     public void initialize(Integer width, Integer height, GwtGridStackOptions options) {
-        if(initialized) {
+        if (initialized) {
             LOGGER.severe("gridstack already initialized");
             return;
         }
@@ -123,7 +129,7 @@ public class GwtGridStack extends ComplexPanel {
 
     public void add(Widget widget, GridStackChildOptions info) {
         Element wrapper = createWrapper(info);
-        if(initialized) {
+        if (initialized) {
             addWidgetWrapperToGridStack(wrapper);
         } else {
             getElement().appendChild(wrapper);
@@ -135,8 +141,10 @@ public class GwtGridStack extends ComplexPanel {
 
     @Override
     public boolean remove(Widget widget) {
-        if(initialized) {
-            Element wrapper = widget.getElement().getParentElement().getParentElement();
+        if (initialized) {
+            Element wrapper = widget.getElement()
+                .getParentElement()
+                .getParentElement();
             widgetWrappers.remove(wrapper);
             removeWidgetWrapperFromGridStack(wrapper);
             wrapper.removeFromParent();
@@ -145,7 +153,8 @@ public class GwtGridStack extends ComplexPanel {
     }
 
     protected Element createWrapper(GridStackChildOptions info) {
-        Element wrapper = Document.get().createDivElement();
+        Element wrapper = Document.get()
+            .createDivElement();
         wrapper.addClassName("grid-stack-item");
 
         if(info.x >= 0 && info.y >= 0) {
@@ -174,7 +183,14 @@ public class GwtGridStack extends ComplexPanel {
             wrapper.setAttribute("data-gs-locked", "yes");
         }
 
-        Element content = Document.get().createDivElement();
+        if (info.readOnly) {
+            wrapper.setAttribute("data-gs-locked", "yes");
+            wrapper.setAttribute("data-gs-no-resize", "yes");
+            wrapper.setAttribute("data-gs-no-move", "yes");
+        }
+
+        final Element content = Document.get()
+            .createDivElement();
         content.addClassName(CONTENT_CLASSNAME);
 
         if(!info.useDragHandle) {
@@ -191,8 +207,9 @@ public class GwtGridStack extends ComplexPanel {
 
         wrapper.appendChild(content);
 
-        if(info.useDragHandle) {
-            Element dragHandle = Document.get().createDivElement();
+        if (info.useDragHandle) {
+            Element dragHandle = Document.get()
+                .createDivElement();
             dragHandle.addClassName("separate-handle");
             dragHandle.addClassName(DRAG_HANDLE_CLASSNAME);
             wrapper.appendChild(dragHandle);
@@ -345,12 +362,15 @@ public class GwtGridStack extends ComplexPanel {
 
 
     public void updateChild(Widget widget, GridStackChildOptions options) {
-        Element wrapper = widget.getElement().getParentElement().getParentElement();
+        Element wrapper = widget.getElement()
+            .getParentElement()
+            .getParentElement();
         updateWidgetWrapper(wrapper, options.x, options.y, options.width, options.height);
         updateWidgetSizeLimits(wrapper, GwtGridSizeLimits.create(options));
         setLocked(wrapper, options.locked);
+        setReadOnly(wrapper, options.readOnly);
 
-        if(options.disableScrolling) {
+        if (options.disableScrolling) {
             wrapper.addClassName(DISABLE_SCROLLING_CLASSNAME);
         } else {
             wrapper.removeClassName(DISABLE_SCROLLING_CLASSNAME);
@@ -391,9 +411,19 @@ public class GwtGridStack extends ComplexPanel {
         });
     }-*/;
 
+    protected native final void setReadOnly(Element element, boolean readOnly)
+    /*-{
+        var elementId = this.@org.vaadin.alump.gridstack.client.GwtGridStack::elementId;
+        $wnd.$(function () {
+            var grid = $wnd.$('#' + elementId).data('gridstack');
+            grid.locked(element, readOnly);
+            grid.resizable(element, !readOnly);
+            grid.movable(element, !readOnly);
+        });
+    }-*/;
 
     public void commit() {
-        if(initialized && isAttached()) {
+        if (initialized && isAttached()) {
             nativeCommit();
         }
     }
@@ -408,7 +438,7 @@ public class GwtGridStack extends ComplexPanel {
     }-*/;
 
     public void batchUpdate() {
-        if(initialized && isAttached()) {
+        if (initialized && isAttached()) {
             nativeBatchUpdate();
         }
     }

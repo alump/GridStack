@@ -1,21 +1,35 @@
 package org.vaadin.alump.gridstack.demo;
 
-import com.vaadin.event.LayoutEvents;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.vaadin.alump.gridstack.GridStackButton;
 import org.vaadin.alump.gridstack.GridStackCoordinates;
 import org.vaadin.alump.gridstack.GridStackLayout;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * Main test/demo view of GridStackLayout
@@ -33,6 +47,7 @@ public class TestView extends AbstractView {
     private Random rand = new Random(0xDEADBEEF);
 
     private Component locked;
+    private final Component readOnly;
 
     // This value can be used as x and y when client side can pick the best slot
     private final static int CLIENT_SELECTS = GridStackLayout.CLIENT_SIDE_SELECTS;
@@ -78,6 +93,10 @@ public class TestView extends AbstractView {
         locked.setWidth(100, Unit.PERCENTAGE);
         gridStack.addComponent(locked, 1, 0, 3, 1);
 
+        this.readOnly = new Label("This component can be set to read only (moving and resizing is disabled and moving children over will not move this)");
+        this.readOnly.setWidth(100, Unit.PERCENTAGE);
+        this.gridStack.addComponent(this.readOnly, 0, 8, 3, 1);
+
         gridStack.addComponent(createForm(), 0, 5, 2, 3, false);
         gridStack.addComponent(createConsole(), 0, 3, 4, 2);
 
@@ -90,7 +109,7 @@ public class TestView extends AbstractView {
             final int eventId = eventCounter.getAndIncrement();
             events.stream().forEach(event -> {
                 if(event.getMovedChild() instanceof TestItem) {
-                    TestItem item = (TestItem)event.getMovedChild();
+                        TestItem item = (TestItem) event.getMovedChild();
                     item.setHeader(event.getNew());
                 }
                 addEvent("event #" + eventId + ": Moved from " + event.getOld().toString() + " to "
@@ -115,7 +134,7 @@ public class TestView extends AbstractView {
         }));
 
         toolbar.addComponent(createButton(VaadinIcons.TRASH, "Remove component", e -> {
-            if(gridStack.getComponentCount() < 1) {
+            if (gridStack.getComponentCount() < 1) {
                 Notification.show("Nothing to remove!");
                 return;
             }
@@ -156,6 +175,13 @@ public class TestView extends AbstractView {
             gridStack.setComponentLocked(locked, e.getValue());
         });
         toolbar.addComponent(lockItem);
+
+        final CheckBox readOnlyItem = new CheckBox("Read only child");
+        readOnlyItem.setDescription("Define if item with text \"Read only\" is read only or not");
+        readOnlyItem.addValueChangeListener(e -> {
+            this.gridStack.setComponentReadOnly(this.readOnly, e.getValue());
+        });
+        toolbar.addComponent(readOnlyItem);
 
         return toolbar;
     }
@@ -203,7 +229,7 @@ public class TestView extends AbstractView {
         password.addStyleName(ValoTheme.TEXTFIELD_SMALL);
         password.setCaption("Password:");
         layout.addComponent(password);
-        Button login = new GridStackButton("Login", e-> Notification.show("Logged in?"));
+        Button login = new GridStackButton("Login", e -> Notification.show("Logged in?"));
         login.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         login.addStyleName(ValoTheme.BUTTON_SMALL);
         layout.addComponent(login);
@@ -249,7 +275,8 @@ public class TestView extends AbstractView {
 
         if(clickedAtChild) {
             sb.append(": ");
-            sb.append(gridStack.getCoordinates(e.getChildComponent()).toString());
+            sb.append(gridStack.getCoordinates(e.getChildComponent())
+                .toString());
         }
 
         addEvent(sb.toString());
@@ -262,7 +289,8 @@ public class TestView extends AbstractView {
 
     private void moveRandomChildToAnotherFreePosition() {
         List<Component> children = new ArrayList<>();
-        gridStack.iterator().forEachRemaining(child -> children.add(child));
+        gridStack.iterator()
+            .forEachRemaining(child -> children.add(child));
         if(!children.isEmpty()) {
             addEvent("Move random child to new position...");
             Collections.shuffle(children, rand);
