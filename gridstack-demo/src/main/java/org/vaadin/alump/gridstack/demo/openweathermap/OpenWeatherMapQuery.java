@@ -35,7 +35,7 @@ public class OpenWeatherMapQuery {
         private String appid;
 
         private OpenWeatherMapQueryUrl() {
-            super("http://api.openweathermap.org/data/2.5/group");
+            super("https://api.openweathermap.org/data/2.5/group");
         }
 
         public static OpenWeatherMapQueryUrl forCities(String appid, Collection<CityID> cities) {
